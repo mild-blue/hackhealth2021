@@ -29,7 +29,7 @@ public class DoctorController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet("all")]
-    public List<PatientListDto> GetAllPatients()
+    public Task<List<PatientListDto>> GetAllPatients()
     {
         return _patientService.GetPatients(null);
     }
@@ -39,17 +39,9 @@ public class DoctorController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet("mine")]
-    public ActionResult<List<PatientListDto>> GetMyPatients()
+    public Task<List<PatientListDto>> GetMyPatients()
     {
-        var patiens = _patientService.GetPatients("1");
-        if (patiens is not null)
-        {
-            return Ok(patiens);
-        }
-        else
-        {
-            return Ok(new());
-        }
+        return _patientService.GetPatients("1011");
     }
 
 

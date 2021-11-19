@@ -46,12 +46,11 @@ namespace HotPink.API.Services
             await _fhir.UpdateAsync(patient);
         }
 
-        public List<PatientListDto>? GetPatients(string? doctorId)
+        public async Task<List<PatientListDto>> GetPatients(string? doctorId)
         {
             if (string.IsNullOrEmpty(doctorId))
             {
-                var patients = _fhir.SearchAsync<Patient>()
-                    .Result
+                var patients = (await _fhir.SearchAsync<Patient>())
                     .Entry
                     .Select(x => x.Resource)
                     .OfType<Patient>()
@@ -61,14 +60,14 @@ namespace HotPink.API.Services
             }
             else
             {
-                if (_doctorPatients.TryGetValue(doctorId, out var patients))
-                {
-                    return null;
-                }
-                else
-                {
-                    return null;
-                }
+                var patients = (await _fhir.SearchAsync<Patient>(new string[] { $"general-practitioner=Practitioner/{doctorId}" }))
+                   .Entry
+                   .Select(x => x.Resource)
+                   .OfType<Patient>()
+                   .ToList();
+
+
+                return patients.Select(x => x.ToListDto()).ToList();
             }
         }
     }
