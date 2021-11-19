@@ -46,6 +46,7 @@ public class PatientController : ApiController
         {
             var sessionId = Guid.NewGuid();
             _patientService.EstablishSession(sessionId, result.PatientId);
+            _patientService.AddToDoctor(result.DoctorId, result.PatientId);
             return sessionId;
         }
         else

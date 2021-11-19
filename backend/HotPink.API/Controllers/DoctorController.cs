@@ -1,4 +1,6 @@
 
+using HotPink.API.Services;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotPink.API.Controllers;
@@ -13,18 +15,38 @@ public class DoctorController : ApiController
 
     public record CreateInvitationDto(string DoctorId, string PatientId, string InvitationCode);
 
+    private readonly InvitationService _invitationService;
+    private readonly PatientService _patientService;
+
+    public DoctorController(InvitationService invitationService, PatientService patientService)
+    {
+        _invitationService = invitationService;
+        _patientService = patientService;
+    }
+
     /// <summary>
     /// Get all patients.
     /// </summary>
     /// <returns></returns>
     [HttpGet("all")]
-    public List<PatientListDto> GetAllPatients(string? personalNumber)
+    public ActionResult<List<PatientListDto>> GetAllPatients(string? personalNumber)
     {
-        return new()
+        if (string.IsNullOrEmpty(personalNumber))
         {
-            new("1", "John", "9101015533"),
-            new("2", "Jane", "9647012244"),
-        };
+            var patiens = _patientService.GetPatients(null);
+            if (patiens is not null)
+            {
+                return Ok(patiens);
+            }
+            else
+            {
+                return Ok(new());
+            }
+        }
+        else
+        {
+            return NotFound();
+        }
     }
 
     /// <summary>
@@ -32,12 +54,17 @@ public class DoctorController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet("mine")]
-    public List<PatientListDto> GetMyPatients()
+    public ActionResult<List<PatientListDto>> GetMyPatients()
     {
-        return new()
+        var patiens = _patientService.GetPatients("1");
+        if(patiens is not null)
         {
-            new("1", "John", "9101015533")
-        }; ;
+            return Ok(patiens);
+        }
+        else
+        {
+            return Ok(new());
+        }
     }
 
 
@@ -47,8 +74,15 @@ public class DoctorController : ApiController
     /// <param name="invitation"></param>
     /// <returns></returns>
     [HttpPost("invite")]
-    public void Invite([FromBody] CreateInvitationDto invitation)
+    public IActionResult Invite([FromBody] CreateInvitationDto invitation)
     {
-
+        if (_invitationService.Invite(invitation))
+        {
+            return Ok();
+        }
+        else
+        {
+            return Conflict($"Invitation with code {invitation.InvitationCode} already exists.");
+        }
     }
 }

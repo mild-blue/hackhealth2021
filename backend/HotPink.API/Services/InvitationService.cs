@@ -1,5 +1,4 @@
-﻿using HotPink.API.Entities;
-
+﻿
 using System.Collections.Concurrent;
 
 using static HotPink.API.Controllers.DoctorController;
@@ -24,25 +23,6 @@ namespace HotPink.API.Services
             else
             {
                 return null;
-            }
-        }
-    }
-
-    public class PatientService
-    {
-        private readonly ConcurrentDictionary<string, Patient> _patients = new();
-        private readonly ConcurrentDictionary<Guid, Patient> _sessions = new();
-
-        public bool EstablishSession(Guid sessionId, string patientId)
-        {
-            if(_patients.TryGetValue(patientId, out var patient))
-            {
-                _sessions[sessionId] = patient;
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
     }
