@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
 import { Flashlight } from '@ionic-native/flashlight/ngx';
-import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@awesome-cordova-plugins/camera-preview/ngx';
+import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@ionic-native/camera-preview/ngx';
 
 @Component({
   selector: 'app-root',

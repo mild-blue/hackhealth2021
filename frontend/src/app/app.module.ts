@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
 import { Flashlight } from '@ionic-native/flashlight/ngx';
-import { CameraPreview } from '@awesome-cordova-plugins/camera-preview/ngx';
+import { CameraPreview } from '@ionic-native/camera-preview/ngx';
 
 @NgModule({
   declarations: [AppComponent],
