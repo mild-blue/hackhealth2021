@@ -12,11 +12,14 @@ namespace HotPink.API.Services
         private readonly ConcurrentDictionary<Guid, Patient> _sessions = new();
         private readonly ConcurrentDictionary<string, ConcurrentBag<Patient>> _doctorPatients = new();
 
-        public PatientService()
+        private readonly FhirClient _fhir;
+
+        public PatientService(FhirClient fhir)
         {
             _patients.TryAdd("1", new Patient { Id = "1", Name = "John Doe", PersonalNumber = "123" });
             _patients.TryAdd("2", new Patient { Id = "2", Name = "Jane Doe", PersonalNumber = "456" });
             _patients.TryAdd("3", new Patient { Id = "3", Name = "Alex Doe", PersonalNumber = "789" });
+            _fhir = fhir;
         }
 
         public bool EstablishSession(Guid sessionId, string patientId)
@@ -50,6 +53,7 @@ namespace HotPink.API.Services
         {
             if (string.IsNullOrEmpty(doctorId))
             {
+                _fhir.GetPatients().Wait();
                 return _patients.Values.Select(x => x.ToListDTO()).ToList();
             }
             else
