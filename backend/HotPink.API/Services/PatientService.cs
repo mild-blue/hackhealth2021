@@ -1,4 +1,6 @@
-﻿using HotPink.API.Entities;
+﻿using Hl7.Fhir.Rest;
+
+using HotPink.API.Entities;
 
 using System.Collections.Concurrent;
 
@@ -12,14 +14,14 @@ namespace HotPink.API.Services
         private readonly ConcurrentDictionary<Guid, Patient> _sessions = new();
         private readonly ConcurrentDictionary<string, ConcurrentBag<Patient>> _doctorPatients = new();
 
-        private readonly FhirClient _fhir;
+        private readonly IConfiguration _configuration;
 
-        public PatientService(FhirClient fhir)
+        public PatientService(IConfiguration configuration)
         {
             _patients.TryAdd("1", new Patient { Id = "1", Name = "John Doe", PersonalNumber = "123" });
             _patients.TryAdd("2", new Patient { Id = "2", Name = "Jane Doe", PersonalNumber = "456" });
             _patients.TryAdd("3", new Patient { Id = "3", Name = "Alex Doe", PersonalNumber = "789" });
-            _fhir = fhir;
+            _configuration = configuration;
         }
 
         public bool EstablishSession(Guid sessionId, string patientId)
@@ -53,7 +55,10 @@ namespace HotPink.API.Services
         {
             if (string.IsNullOrEmpty(doctorId))
             {
-                _fhir.GetPatients().Wait();
+                var key = _configuration["FhirApiKey"];
+                var client = new FhirClient("https://fhir.afuwmxvolwu6.static-test-account.isccloud.io", messageHandler: new ApiKeyMessageHandler(key));
+                var patients = client.SearchAsync<Hl7.Fhir.Model.Patient>().Result;
+
                 return _patients.Values.Select(x => x.ToListDTO()).ToList();
             }
             else
