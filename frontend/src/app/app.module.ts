@@ -7,6 +7,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
+import { Flashlight } from '@ionic-native/flashlight/ngx';
+import { CameraPreview } from '@awesome-cordova-plugins/camera-preview/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,6 +16,8 @@ import { MediaCapture } from '@ionic-native/media-capture/ngx';
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [
     MediaCapture,
+    Flashlight,
+    CameraPreview,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]
 })
