@@ -6,10 +6,9 @@ namespace HotPink.API.Entities
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public string PersonalNumber { get; set; } = string.Empty;
         public List<PatientData> Data { get; set; } = new();
 
         public PatientListDto ToListDTO() =>
-            new(Id, Name, PersonalNumber);
+            new(Id, Name);
     }
 }

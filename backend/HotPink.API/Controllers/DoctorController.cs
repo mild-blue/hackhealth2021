@@ -11,7 +11,7 @@ public abstract class ApiController : ControllerBase { }
 
 public class DoctorController : ApiController
 {
-    public record PatientListDto(string Id, string Name, string PersonalNumber);
+    public record PatientListDto(string Id, string Name);
 
     public record CreateInvitationDto(string DoctorId, string PatientId, string InvitationCode);
 
@@ -29,24 +29,9 @@ public class DoctorController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet("all")]
-    public ActionResult<List<PatientListDto>> GetAllPatients(string? personalNumber)
+    public List<PatientListDto> GetAllPatients()
     {
-        if (string.IsNullOrEmpty(personalNumber))
-        {
-            var patiens = _patientService.GetPatients(null);
-            if (patiens is not null)
-            {
-                return Ok(patiens);
-            }
-            else
-            {
-                return Ok(new());
-            }
-        }
-        else
-        {
-            return NotFound();
-        }
+        return _patientService.GetPatients(null);
     }
 
     /// <summary>
@@ -57,7 +42,7 @@ public class DoctorController : ApiController
     public ActionResult<List<PatientListDto>> GetMyPatients()
     {
         var patiens = _patientService.GetPatients("1");
-        if(patiens is not null)
+        if (patiens is not null)
         {
             return Ok(patiens);
         }

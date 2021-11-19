@@ -1,3 +1,6 @@
+using Hl7.Fhir.Rest;
+
+using HotPink.API;
 using HotPink.API.Services;
 
 using System.Reflection;
@@ -20,6 +23,15 @@ builder.Services.AddSwaggerGen(c =>
 // business logic
 builder.Services.AddSingleton<InvitationService>();
 builder.Services.AddSingleton<PatientService>();
+
+// FHIR
+builder.Services.AddSingleton(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var key = configuration["FhirApiKey"];
+    var client = new FhirClient("https://fhir.afuwmxvolwu6.static-test-account.isccloud.io", messageHandler: new ApiKeyMessageHandler(key));
+    return client;
+});
 
 var app = builder.Build();
 
