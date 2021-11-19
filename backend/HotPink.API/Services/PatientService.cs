@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Rest;
+﻿using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
 
 using HotPink.API.Entities;
 using HotPink.API.Extensions;
@@ -6,6 +7,8 @@ using HotPink.API.Extensions;
 using System.Collections.Concurrent;
 
 using static HotPink.API.Controllers.DoctorController;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace HotPink.API.Services
 {
@@ -19,9 +22,6 @@ namespace HotPink.API.Services
 
         public PatientService(FhirClient fhir)
         {
-            _patients.TryAdd("1", new Patient { Id = "1", Name = "John Doe" });
-            _patients.TryAdd("2", new Patient { Id = "2", Name = "Jane Doe" });
-            _patients.TryAdd("3", new Patient { Id = "3", Name = "Alex Doe" });
             _fhir = fhir;
         }
 
@@ -38,29 +38,23 @@ namespace HotPink.API.Services
             }
         }
 
-        public bool AddToDoctor(string doctorId, string patientId)
+        public async Task AddToDoctor(string doctorId, string patientId)
         {
-            if (_patients.TryGetValue(patientId, out var patient))
-            {
-                if (!_doctorPatients.TryAdd(doctorId, new() { patient }))
-                {
-                    _doctorPatients[doctorId].Add(patient);
-                    return true;
-                }
-            }
-
-            return false;
+            var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+            patient.GeneralPractitioner.Clear();
+            patient.GeneralPractitioner.Add(new ResourceReference($"Practitioner/{doctorId}"));
+            await _fhir.UpdateAsync(patient);
         }
 
         public List<PatientListDto>? GetPatients(string? doctorId)
         {
             if (string.IsNullOrEmpty(doctorId))
             {
-                var patients = _fhir.SearchAsync<Hl7.Fhir.Model.Patient>()
+                var patients = _fhir.SearchAsync<Patient>()
                     .Result
                     .Entry
                     .Select(x => x.Resource)
-                    .OfType<Hl7.Fhir.Model.Patient>()
+                    .OfType<Patient>()
                     .ToList();
 
                 return patients.Select(x => x.ToListDto()).ToList();
@@ -69,7 +63,7 @@ namespace HotPink.API.Services
             {
                 if (_doctorPatients.TryGetValue(doctorId, out var patients))
                 {
-                    return patients.Select(x => x.ToListDTO()).ToList();
+                    return null;
                 }
                 else
                 {

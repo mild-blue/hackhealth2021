@@ -39,14 +39,14 @@ public class PatientController : ApiController
     /// <param name="invitation"></param>
     /// <returns></returns>
     [HttpPost("accept")]
-    public ActionResult<Guid> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
+    public async Task<ActionResult<Guid>> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
     {
         var result = _invitationService.Accept(invitation);
         if (result is not null)
         {
             var sessionId = Guid.NewGuid();
             _patientService.EstablishSession(sessionId, result.PatientId);
-            _patientService.AddToDoctor(result.DoctorId, result.PatientId);
+            await _patientService.AddToDoctor(result.DoctorId, result.PatientId);
             return sessionId;
         }
         else
