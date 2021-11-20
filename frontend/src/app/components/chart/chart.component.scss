@@ -1,6 +1,8 @@
 .chart {
+  $height: calc((100vw - 32px) * (306 / 382));
   width: calc(100vw - 32px);
-  height: calc((100vw - 32px) * (306 / 382));
+  height: $height;
+  position: relative;
 
   @media (min-width: 860px) {
     width: calc(860px - 32px);
@@ -18,4 +20,28 @@
       display: none;
     }
   }
+
+  &:after {
+
+    content: '';
+    height: 12px;
+    width: 100%;
+    background: var(--ion-background-color, #ffffff);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    @media (min-width: 860px) {
+      height: 1.8%;
+    }
+  }
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  position: relative;
+  top: -5px;
+  opacity: 0.5;
 }
