@@ -83,7 +83,7 @@ public class PatientController : ApiController
         }
 
         // TODO classify data
-        var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification.json"));
+        var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification2.json"));
         var data = JsonSerializer.Deserialize<PatientData>(dataJson);
 
         await _patientService.AddPatientData(patientId, data);
