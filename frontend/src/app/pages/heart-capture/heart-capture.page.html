@@ -33,7 +33,7 @@
     <ng-container *ngIf="!loading && !isWaiting">
       <ng-container *ngIf="recordId else error">
         <h2>Analysis is done</h2>
-        <ion-button [routerLink]="['/patient-history', recordId]"
+        <ion-button [routerLink]="['/patient', 'history', recordId]"
                     color="primary"
                     type="submit"
                     expand="block">

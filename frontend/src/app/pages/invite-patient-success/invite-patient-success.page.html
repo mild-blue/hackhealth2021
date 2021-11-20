@@ -16,6 +16,8 @@
           Copy
           <ion-icon name="copy-outline" slot="end"></ion-icon>
         </ion-button>
+
+        <p *ngIf="copiedSuccess.length" class="copied">{{ copiedSuccess}}</p>
       </section>
     </div>
   </main>
