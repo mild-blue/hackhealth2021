@@ -1,9 +1,57 @@
-<ion-header  translucent="true" class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>heart-capture</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-header translucent="true" class="ion-no-border"></ion-header>
 
 <ion-content fullscreen="true">
+  <main>
+    <ng-container *ngIf="isWeb">
+      <h3>Run app on your smartphone or tablet to capture heartbeat.</h3>
+    </ng-container>
 
+    <ng-container *ngIf="loading">
+      <h1>Good job!</h1>
+      <h2>We are uploading and processing your video. Please wait.</h2>
+      <app-loading></app-loading>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && !isWaiting">
+      <ng-container *ngIf="recordId else error">
+        <h2>Analysis is done</h2>
+        <ion-button [routerLink]="['/measurement-detail', recordId]"
+                    color="primary"
+                    type="submit"
+                    expand="block">
+          See analysis result
+        </ion-button>
+      </ng-container>
+    </ng-container>
+
+  </main>
 </ion-content>
+
+<ng-template #error>
+  <h2>Oh no, something is wrong with your video.</h2>
+  <p *ngIf="errorMessage.length">{{ errorMessage }}</p>
+  <ion-button (click)="perform()"
+              color="primary"
+              type="submit"
+              expand="block">
+    Record another one
+  </ion-button>
+</ng-template>
+
+<ion-footer *ngIf="isWeb">
+  <ion-toolbar>
+    <ion-button [routerLink]="['/patient/history']"
+                color="primary"
+                type="submit"
+                expand="block">
+      Explore your measurement history
+    </ion-button>
+    <ion-button [routerLink]="['/patient/measure']"
+                color="primary"
+                fill="outline"
+                type="submit"
+                expand="block">
+      Go back
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

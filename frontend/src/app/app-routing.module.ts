@@ -36,12 +36,17 @@ const routes: Routes = [
   {
     path: 'invite-patient',
     canActivate: [DoctorGuard],
-    loadChildren: () => import('./pages/invite-patient/invite-patient.module').then( m => m.InvitePatientPageModule)
+    loadChildren: () => import('./pages/invite-patient/invite-patient.module').then(m => m.InvitePatientPageModule)
   },
   {
     path: 'invite-patient-success/:code/:name',
     canActivate: [DoctorGuard],
-    loadChildren: () => import('./pages/invite-patient-success/invite-patient-success.module').then( m => m.InvitePatientSuccessPageModule)
+    loadChildren: () => import('./pages/invite-patient-success/invite-patient-success.module').then(m => m.InvitePatientSuccessPageModule)
+  },
+  {
+    path: 'measurement-detail/:id',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/measurement-detail/measurement-detail.module').then(m => m.MeasurementDetailPageModule)
   }
 ];
 
