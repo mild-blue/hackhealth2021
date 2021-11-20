@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../../services/api/api.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
+import { RecordDetail } from '../../model/RecordDetail';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -12,11 +12,13 @@ import { PatientService } from '../../services/patient/patient.service';
 })
 export class MeasurementDetailPage implements OnInit {
 
+  record?: RecordDetail;
+  loading = false
+
   id?: string;
   backText = this.doctorService.isDoctorLoggedIn ? 'Back' : 'My history';
 
   constructor(private activatedRoute: ActivatedRoute,
-              private api: ApiService,
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
@@ -24,7 +26,7 @@ export class MeasurementDetailPage implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this.activatedRoute.snapshot.paramMap.get('code') ?? undefined;
+    this.id = this.activatedRoute.snapshot.paramMap.get('recordId') ?? undefined;
 
     if (!this.id) {
       return;
@@ -38,10 +40,13 @@ export class MeasurementDetailPage implements OnInit {
       return;
     }
 
+    this.loading = true;
     try {
-      await this.api.getRecord(this.id);
+      this.record = await this.patientService.getPatientRecord(this.id);
     } catch (e) {
       this.toastService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 
