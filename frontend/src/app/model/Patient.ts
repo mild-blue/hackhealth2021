@@ -1,4 +1,6 @@
+import { Doctor } from './Doctor';
+
 export interface Patient {
   sessionId: string;
-  doctorName?: string;
+  doctor?: Doctor;
 }

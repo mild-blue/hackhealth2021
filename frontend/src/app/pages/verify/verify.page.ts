@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { PatientService } from '../../services/patient/patient.service';
 
 @Component({
   selector: 'app-verify',
@@ -8,15 +9,25 @@ import { NavController } from '@ionic/angular';
 })
 export class VerifyPage implements OnInit {
 
-  constructor(private navController: NavController) {
+  constructor(private navController: NavController,
+              private patientService: PatientService) {
   }
 
   ngOnInit() {
   }
 
-  async verify() {
-    // todo
+  continueWithoutCode() {
+    this.patientService.loginAnonymously();
     this.navController.navigateRoot(['/patient']);
+  }
+
+  async verify() {
+    try {
+      await this.patientService.acceptInvitation('');
+      this.navController.navigateRoot(['/patient']);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
 }

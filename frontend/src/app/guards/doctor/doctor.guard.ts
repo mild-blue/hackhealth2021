@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { PatientService } from '../../services/patient/patient.service';
+import { DoctorService } from '../../services/doctor/doctor.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PatientGuard implements CanActivate {
+export class DoctorGuard implements CanActivate {
   constructor(private router: Router,
-              private patientService: PatientService) {
+              private doctorService: DoctorService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.patientService.isPatientLoggedIn) {
+    if (this.doctorService.isDoctorLoggedIn) {
       // logged in, return true
       return true;
     }
@@ -20,5 +20,4 @@ export class PatientGuard implements CanActivate {
     this.router.navigate(['/login'], { replaceUrl: true });
     return false;
   }
-
 }

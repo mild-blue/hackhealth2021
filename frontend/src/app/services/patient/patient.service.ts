@@ -16,6 +16,12 @@ export class PatientService {
     this.setCurrentPatient();
   }
 
+  public loginAnonymously(): Patient {
+    const patient: Patient = { sessionId: '1' };
+    this.login(patient);
+    return patient;
+  }
+
   public async acceptInvitation(invitationCode: string): Promise<Patient> {
     return this.http.post(
       `${environment.apiUrl}/Patient/accept`,
