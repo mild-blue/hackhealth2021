@@ -1,0 +1,90 @@
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="patient" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Before you start</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main>
+    <ng-container *ngIf="isMobile else web">
+
+      <section *ngIf="step === 1">
+        <h1>Select preferred length of the captured video</h1>
+
+        <ul>
+          <li (click)="length = 30">
+            30 seconds
+            <ion-icon *ngIf="length === 30" name="checkmark"></ion-icon>
+          </li>
+          <li (click)="length = 60">
+            60 seconds
+            <ion-icon *ngIf="length === 60" name="checkmark"></ion-icon>
+          </li>
+        </ul>
+
+        <ion-button (click)="step = 2"
+                    color="primary"
+                    expand="block">
+          Confirm {{ length }}s video
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </section>
+
+      <section *ngIf="step === 2">
+        <ol>
+          <li>Turn on the flash before recording</li>
+          <li>Place your index finger on the camera lens</li>
+          <li>Start recording</li>
+          <li>
+            After <strong>{{length}}</strong> seconds recording will stop automatically
+            <i>Shorter videos will not be processed</i>
+          </li>
+          <li>
+            Confirm your recording and wait for results
+            <ion-icon name="heart-outline"></ion-icon>
+          </li>
+        </ol>
+        <ion-button [routerLink]="['/heart-capture', length]"
+                    color="primary"
+                    expand="block">
+          Start recording
+          <ion-icon name="play-circle-outline" slot="end"></ion-icon>
+        </ion-button>
+
+        <ion-button (click)="step = 1"
+                    color="primary"
+                    fill="none"
+                    expand="block">
+          <ion-icon name="chevron-back-outline" slot="start"></ion-icon>
+          Previous step
+        </ion-button>
+      </section>
+
+    </ng-container>
+  </main>
+</ion-content>
+
+<ng-template #web>
+  <div class="is-web">
+    <h3>Heart rate measurement is only available on mobile devices.</h3>
+    <p>Run app on your smartphone or tablet to capture heartbeat.</p>
+    <div class="buttons">
+      <ion-button [routerLink]="['/patient/history']"
+                  color="primary"
+                  type="submit"
+                  expand="block">
+        Explore your measurement history
+      </ion-button>
+      <ion-button [routerLink]="['/patient/measure']"
+                  color="primary"
+                  fill="outline"
+                  type="submit"
+                  expand="block">
+        Go back
+      </ion-button>
+    </div>
+  </div>
+</ng-template>

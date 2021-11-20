@@ -29,7 +29,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/doctor-home/doctor-home.module').then(m => m.DoctorHomePageModule)
   },
   {
-    path: 'heart-capture',
+    path: 'heart-capture/:length',
     canActivate: [PatientGuard],
     loadChildren: () => import('./pages/heart-capture/heart-capture.module').then(m => m.HeartCapturePageModule)
   },
@@ -52,6 +52,11 @@ const routes: Routes = [
     path: 'patient-detail/:id/:name',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/patient-detail/patient-detail.module').then(m => m.PatientDetailPageModule)
+  },
+  {
+    path: 'instructions',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/instructions/instructions.module').then( m => m.InstructionsPageModule)
   }
 ];
 

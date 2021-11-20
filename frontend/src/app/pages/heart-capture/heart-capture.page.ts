@@ -27,6 +27,7 @@ export class HeartCapturePage implements OnInit {
   public isWeb = this.platformService.isWeb;
   public loading = false;
   public isWaiting = true;
+  public isCancelled = false;
   public errorMessage = '';
   public recordId?: string;
 
@@ -39,9 +40,10 @@ export class HeartCapturePage implements OnInit {
 
   ngOnInit() {
     if (this.isWeb) {
+      this.navController.navigateBack('/patient');
       return;
     }
-    this.init();
+    this.perform();
   }
 
   async init() {
@@ -69,6 +71,7 @@ export class HeartCapturePage implements OnInit {
   }
 
   async perform() {
+    this.isCancelled = false;
     this.isWaiting = true;
     this.errorMessage = '';
     this.recordId = '';
@@ -100,21 +103,20 @@ export class HeartCapturePage implements OnInit {
       }
 
       const file = (result as MediaFile[])[0];
-      console.log('==== RECORDED FILE', file);
       const video = file as unknown as VideoCapture;
       console.log('==== RECORDED VIDEO', video);
-      console.log('==== VIDEO localURL', video.localURL, '==== VIDEO FULL PATH', video.fullPath);
       return video;
     } catch (e) {
       console.log('==== ERROR WHILE RECORDING VIDEO', e);
+      if (e.code === 3) {
+        this.isCancelled = true;
+      }
     }
   }
 
   async getBlob(video: VideoCapture) {
     const path = this.platformService.isAndroid ? video.fullPath : video.localURL;
-    console.log('==== READING FROM', path);
     const permissions = await Filesystem.requestPermissions();
-    console.log('====  Filesystem.requestPermissions()', permissions.publicStorage);
     if (permissions.publicStorage !== 'denied') {
       const contents = await Filesystem.readFile({ path });
       return this.b64toBlob(contents.data, video.type ?? 'video/quicktime');

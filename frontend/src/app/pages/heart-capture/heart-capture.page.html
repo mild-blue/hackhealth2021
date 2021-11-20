@@ -1,33 +1,39 @@
-<ion-header translucent="true" class="ion-no-border"></ion-header>
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="instructions" text="Back"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content fullscreen="true">
   <main>
-    <ng-container *ngIf="isWeb">
-      <div class="is-web">
-        <h3>Heart rate measurement is only available on mobile devices.</h3>
-        <p>Run app on your smartphone or tablet to capture heartbeat.</p>
-        <div class="buttons">
-          <ion-button [routerLink]="['/patient/history']"
-                      color="primary"
-                      type="submit"
-                      expand="block">
-            Explore your measurement history
-          </ion-button>
-          <ion-button [routerLink]="['/patient/measure']"
-                      color="primary"
-                      fill="outline"
-                      type="submit"
-                      expand="block">
-            Go back
-          </ion-button>
-        </div>
-      </div>
-    </ng-container>
-
     <ng-container *ngIf="loading">
       <h1>Good job!</h1>
       <h2>We are uploading and processing your video. Please wait.</h2>
       <app-loading></app-loading>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && isWaiting">
+      <ng-container *ngIf="!isCancelled else cancelled">
+        <h2>Camera is starting...</h2>
+      </ng-container>
+      <ng-template #cancelled>
+        <h2>Recording was cancelled</h2>
+        <ion-button (click)="perform()"
+                    color="primary"
+                    type="submit"
+                    expand="block">
+          Record again
+        </ion-button>
+        <ion-button [routerLink]="['/']"
+                    color="primary"
+                    fill="outline"
+                    type="submit"
+                    expand="block">
+          Return to homepage
+        </ion-button>
+      </ng-template>
     </ng-container>
 
     <ng-container *ngIf="!loading && !isWaiting">
@@ -48,7 +54,6 @@
         </ion-button>
       </ng-container>
     </ng-container>
-
   </main>
 </ion-content>
 
