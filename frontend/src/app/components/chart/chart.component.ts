@@ -6,8 +6,8 @@ import { RecordDetail } from '../../model/RecordDetail';
 interface DataPoint {
   x: number,
   y: number,
-  markerType: string,
-  markerColor: string
+  markerType?: string,
+  markerColor?: string
 }
 
 const defaultMarkerColor = '#e2001a';
@@ -43,9 +43,7 @@ export class ChartComponent implements OnChanges {
     for (const x in record.peaks_distances) {
       dataPoints.push({
         x: Number(x),
-        y: record.peaks_distances[x],
-        markerType: 'none',
-        markerColor: defaultMarkerColor
+        y: record.peaks_distances[x]
       });
     }
 
@@ -75,6 +73,8 @@ export class ChartComponent implements OnChanges {
   }
 
   initPulseWaveChart(containerId: string, dataPoints: DataPoint[]) {
+    const maxX = Math.max(...this.record.pulse_wave[0]);
+    const maximum = maxX < 30 ? 30 : 60 - maxX > maxX - 30 ? 30 : 60;
     const chart = new CanvasJS.Chart(containerId, {
       backgroundColor: this.isDarkMode ? this.isIos ? '#000000' : '#121212' : '#ffffff',
       theme: this.isDarkMode ? 'dark1' : 'light2', // "light1", "light2", "dark1", "dark2"
@@ -89,7 +89,7 @@ export class ChartComponent implements OnChanges {
         interval: 5,
         intervalType: 'number',
         minimum: 0,
-        maximum: 60,
+        maximum,
         labelFontSize: 10,
         gridThickness: 0,
         lineThickness: 0.25 / 2,
@@ -126,22 +126,33 @@ export class ChartComponent implements OnChanges {
         enabled: false
       },
       axisX: {
-        interval: 1,
-        intervalType: 'month',
-        valueFormatString: 'MMM',
+        title: 'Peak',
+        titleFontSize: 12,
+        interval: 5,
+        labelFormatter: (e) => e.value + 1,
+        intervalType: 'number',
+        labelFontSize: 10,
         gridThickness: 0,
-        labelFormatter: () => ''
+        lineThickness: 0.25 / 2,
+        tickThickness: 0.25
       },
       axisY: {
-        lineThickness: 0,
-        gridThickness: 0,
-        tickLength: 0,
-        labelFormatter: () => ''
+        title: 'Time (s)',
+        intervalType: 'number',
+        minimum: 0,
+        maximum: 1,
+        titleFontSize: 10,
+        labelFontSize: 12,
+        gridThickness: 0.25,
+        lineThickness: 0.25,
+        tickThickness: 0.25
       },
       data: [
         {
-          type: 'line',
+          type: 'scatter',
+          markerType: 'circle',
           markerSize: 4,
+          markerColor: '#e2001a',
           dataPoints
         }
       ]

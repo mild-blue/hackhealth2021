@@ -25,14 +25,14 @@
 
     content: '';
     height: 9px;
-    width: 100%;
+    width: 30%;
     background: var(--ion-background-color, #ffffff);
     position: absolute;
     bottom: 0;
-    left: 0;
+    right: 0;
 
     @media (min-width: 860px) {
-      height: 1.357466063348416%;
+      height: 1.6%;
     }
   }
 }
