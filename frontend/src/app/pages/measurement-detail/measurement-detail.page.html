@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header translucent="true" class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button (mouseup)="goBack()"
@@ -10,7 +10,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen="true">
   <ng-container *ngIf="!loading else spinner">
     <ng-container *ngIf="record">
       <main>

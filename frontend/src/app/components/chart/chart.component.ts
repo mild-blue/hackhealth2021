@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as CanvasJS from '../../plugins/canvasjs.min';
 import { PlatformService } from '../../services/platform/platform.service';
 import { RecordDetail } from '../../model/RecordDetail';
@@ -17,7 +17,7 @@ const defaultMarkerColor = '#e2001a';
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
-export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
+export class ChartComponent implements OnChanges {
 
   @Input() record?: RecordDetail;
 
@@ -25,17 +25,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   isIos = !this.platform.isAndroid;
 
   constructor(private platform: PlatformService) {
-  }
-
-  ngAfterViewInit() {
-    if (!this.record) {
-      return;
-    }
-
-
-  }
-
-  ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -65,7 +54,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       dataPoints.push({ x, y, markerType, markerColor: defaultMarkerColor });
     }
 
-    console.log('dataPoints', dataPoints);
     return dataPoints;
   }
 
@@ -82,7 +70,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
         interval: 1,
         intervalType: 'month',
         valueFormatString: 'MMM',
-        gridThickness: 0
+        gridThickness: 0,
+        labelFormatter: () => ''
       },
       axisY: {
         lineThickness: 0,
@@ -93,10 +82,9 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       data: [
         {
           type: 'line',
-          markerSize: 12,
+          markerSize: 4,
           dataPoints
         }
-        // todo: plot second data set with points
       ]
     });
 
