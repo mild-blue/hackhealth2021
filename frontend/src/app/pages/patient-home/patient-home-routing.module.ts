@@ -6,7 +6,7 @@ import { PatientGuard } from '../../guards/patient/patient.guard';
 
 const routes: Routes = [
   {
-    path: 'patient',
+    path: '',
     component: PatientHomePage,
     canActivate: [PatientGuard],
     children: [

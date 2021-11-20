@@ -13,13 +13,18 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.patientService.isPatientLoggedIn) {
+    if (route.url[0]?.path === 'patient') {
+      if (this.patientService.isPatientLoggedIn) {
+        // proceed to patient HP
+        return true;
+      } else if (this.doctorService.isDoctorLoggedIn) {
+        // redirect to doctor HP
+        this.router.navigate(['/doctor'], { replaceUrl: true });
+        return false;
+      }
+    } else if (this.patientService.isPatientLoggedIn || this.doctorService.isDoctorLoggedIn) {
       // logged in, return true
       return true;
-    } else if (this.doctorService.isDoctorLoggedIn) {
-      // redirect to doctor HP
-      this.router.navigate(['/doctor'], { replaceUrl: true });
-      return false;
     }
 
     // not logged in, redirect to login page

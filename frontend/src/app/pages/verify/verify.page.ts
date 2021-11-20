@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { PatientService } from '../../services/patient/patient.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-verify',
@@ -13,6 +14,7 @@ export class VerifyPage implements OnInit {
   code?: string;
 
   constructor(private navController: NavController,
+              private router: Router,
               private patientService: PatientService,
               private toastService: ToastService) {
   }
@@ -22,7 +24,8 @@ export class VerifyPage implements OnInit {
 
   continueWithoutCode() {
     this.patientService.loginAnonymously();
-    this.navController.navigateRoot(['/patient']);
+    this.router.navigate(['/patient']);
+    // this.navController.navigateRoot(['/patient']);
   }
 
   async verify() {

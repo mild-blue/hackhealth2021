@@ -10,6 +10,7 @@ import { Patient } from '../../model/Patient';
 export class DoctorHomePage implements OnInit {
 
   patients: Patient[] = [];
+  loading = false;
 
   constructor(private doctorService: DoctorService) {
   }
@@ -19,10 +20,13 @@ export class DoctorHomePage implements OnInit {
   }
 
   async initMyPatients() {
+    this.loading = true;
     try {
       this.patients = await this.doctorService.getMyPatients();
     } catch (e) {
 
+    } finally {
+      this.loading = false;
     }
   }
 

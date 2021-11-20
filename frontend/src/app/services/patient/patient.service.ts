@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { PatientDetail } from '../../model/PatientDetail';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,20 @@ export class PatientService {
     this.patientSubject.next(undefined);
     localStorage.removeItem('patient');
     this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  public async getPatientDetail(id: string): Promise<PatientDetail> {
+    return this.http.get<PatientDetail>(
+      `${environment.apiUrl}/Patient/${id}`
+    ).pipe(
+      map(data => {
+        data.data = [...data.data.map(record => {
+          record.date = new Date(record.created);
+          return record;
+        })];
+        return data;
+      })
+    ).toPromise();
   }
 
   public async acceptInvitation(invitationCode: string): Promise<Patient> {

@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { PatientHistoryPageRoutingModule } from './patient-history-routing.module';
+import { PatientDetailPageRoutingModule } from './patient-detail-routing.module';
 
-import { PatientHistoryPage } from './patient-history.page';
+import { PatientDetailPage } from './patient-detail.page';
 import { PagesSharedModule } from '../pages-shared.module';
 
 @NgModule({
@@ -14,9 +14,9 @@ import { PagesSharedModule } from '../pages-shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    PatientHistoryPageRoutingModule,
+    PatientDetailPageRoutingModule,
     PagesSharedModule
   ],
-  declarations: [PatientHistoryPage]
+  declarations: [PatientDetailPage]
 })
-export class PatientHistoryPageModule {}
+export class PatientDetailPageModule {}

@@ -4,10 +4,12 @@ import { LoadingComponent } from '../components/loading/loading.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { RecordListComponent } from '../components/record-list/record-list.component';
 
 @NgModule({
   declarations: [
-    LoadingComponent
+    LoadingComponent,
+    RecordListComponent
   ],
   imports: [
     CommonModule,
@@ -16,7 +18,9 @@ import { RouterModule } from '@angular/router';
     RouterModule
   ],
   exports: [
-    LoadingComponent
+    LoadingComponent,
+    RecordListComponent
   ]
 })
-export class PagesSharedModule { }
+export class PagesSharedModule {
+}

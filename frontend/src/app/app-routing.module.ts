@@ -7,6 +7,11 @@ import { AuthGuard } from './guards/auth/auth.guard';
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'patient',
+    pathMatch: 'full'
+  },
+  {
+    path: 'patient',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/patient-home/patient-home.module').then(m => m.PatientHomePageModule)
   },
@@ -47,6 +52,11 @@ const routes: Routes = [
     path: 'measurement-detail/:id',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/measurement-detail/measurement-detail.module').then(m => m.MeasurementDetailPageModule)
+  },
+  {
+    path: 'patient-detail/:id',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/patient-detail/patient-detail.module').then(m => m.PatientDetailPageModule)
   }
 ];
 

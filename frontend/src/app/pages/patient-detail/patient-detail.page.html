@@ -1,11 +1,9 @@
 <ion-header translucent="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>My history</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="logout()">
-        <ion-icon name="log-out-outline"></ion-icon>
-      </ion-button>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" text="Back"></ion-back-button>
     </ion-buttons>
+    <ion-title *ngIf="detail">{{ detail.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
