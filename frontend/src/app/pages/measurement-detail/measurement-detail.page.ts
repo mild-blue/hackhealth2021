@@ -13,7 +13,7 @@ import { PatientService } from '../../services/patient/patient.service';
 export class MeasurementDetailPage implements OnInit {
 
   id?: string;
-  backText = this.doctorService.isDoctorLoggedIn ? 'Back' : 'History';
+  backText = this.doctorService.isDoctorLoggedIn ? 'Back' : 'My history';
 
   constructor(private activatedRoute: ActivatedRoute,
               private api: ApiService,
