@@ -28,13 +28,13 @@ export class DoctorService {
     ).pipe().toPromise();
   }
 
-  public async invitePatient(patientId: string, invitationCode: string): Promise<void> {
+  public async invitePatient(patientId: string, invitationCode: number): Promise<void> {
     return this.http.post<void>(
       `${environment.apiUrl}/Doctor/invite`,
       {
         doctorId: this.doctorSubject.value.id,
         patientId,
-        invitationCode
+        invitationCode: `${invitationCode}`
       }
     ).pipe().toPromise();
   }
