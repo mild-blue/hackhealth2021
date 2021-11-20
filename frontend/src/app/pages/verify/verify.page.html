@@ -1,0 +1,20 @@
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="login" text="Back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Verify invitation code</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+
+  <ion-input [(ngModel)]="code"></ion-input>
+
+  <ion-button (click)="verify()"
+              [disabled]="!code">
+    Verify
+  </ion-button>
+  <ion-button (click)="continueWithoutCode()">Continue without invitation code</ion-button>
+
+</ion-content>

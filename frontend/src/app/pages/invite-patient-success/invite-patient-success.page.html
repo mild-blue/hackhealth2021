@@ -1,0 +1,26 @@
+<ion-header translucent="true" class="ion-no-border"></ion-header>
+
+<ion-content fullscreen="true">
+  <main>
+    <div class="success">
+      <h1>Great!</h1>
+      <h2>Share this invitation code with {{ name }}:</h2>
+      <div class="code">
+        {{ code }}
+      </div>
+    </div>
+  </main>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button [routerLink]="['/doctor']"
+                color="primary"
+                type="submit"
+                expand="block">
+      Got it!
+      <ion-icon slot="end" name="checkmark"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+

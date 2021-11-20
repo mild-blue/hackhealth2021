@@ -1,0 +1,11 @@
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()"><ion-icon name="log-out-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <ion-button [routerLink]="['/heart-capture']">Measure my heartbeat</ion-button>
+</ion-content>

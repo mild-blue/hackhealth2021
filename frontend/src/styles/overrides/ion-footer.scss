@@ -1,0 +1,19 @@
+ion-footer {
+  ion-toolbar {
+    &:not(.ion-no-padding) {
+      padding-top: 10px;
+      padding-bottom: max(var(--ion-safe-area-bottom), 10px) !important;
+    }
+  }
+
+  ion-button {
+    display: block;
+    margin: auto;
+    max-width: var(--container-max-width);
+    width: calc(100vw - 32px);
+  }
+
+  ion-button + ion-button {
+    margin-top: 10px;
+  }
+}

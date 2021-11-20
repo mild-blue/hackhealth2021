@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { HeartCapturePageRoutingModule } from './heart-capture-routing.module';
 
 import { HeartCapturePage } from './heart-capture.page';
+import { PagesSharedModule } from '../pages-shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HeartCapturePageRoutingModule
+    HeartCapturePageRoutingModule,
+    PagesSharedModule
   ],
   declarations: [HeartCapturePage]
 })

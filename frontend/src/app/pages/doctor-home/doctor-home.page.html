@@ -1,0 +1,43 @@
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>My patients</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <main>
+    <ng-container *ngIf="!loading else spinner">
+      <ng-container *ngIf="patients.length else noPatients">
+        <ion-list>
+          <ion-item *ngFor="let p of patients"
+                    [routerLink]="['/patient-detail', p.id]"
+                    [detail]="true">
+            <ion-label>{{ p.name }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+    </ng-container>
+  </main>
+</ion-content>
+
+<ion-footer class="ion-no-border fab-button-footer">
+  <ion-toolbar class="ion-no-padding" style="--min-height: 0; --background: transparent">
+    <ion-fab-button [routerLink]="['/invite-patient']" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-toolbar>
+</ion-footer>
+
+<ng-template #noPatients>
+  <i>Continue by inviting a patient</i>
+</ng-template>
+
+
+<ng-template #spinner>
+  <app-loading></app-loading>
+</ng-template>

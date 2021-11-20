@@ -1,0 +1,17 @@
+<ion-header  translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+
+  <section>
+    <ion-button [routerLink]="'/verify'">
+      I am patient
+    </ion-button>
+    <ion-button (click)="handleDoctorLogin()">
+      I am doctor
+    </ion-button>
+  </section>
+</ion-content>

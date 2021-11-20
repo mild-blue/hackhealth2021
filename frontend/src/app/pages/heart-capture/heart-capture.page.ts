@@ -3,6 +3,7 @@ import { CaptureError, MediaCapture, MediaFile } from '@ionic-native/media-captu
 import { Filesystem } from '@capacitor/filesystem';
 import { ApiService } from '../../services/api/api.service';
 import { AlertController } from '@ionic/angular';
+import { PlatformService } from '../../services/platform/platform.service';
 
 interface VideoCapture {
   name: string;
@@ -23,12 +24,22 @@ interface VideoCapture {
 })
 export class HeartCapturePage implements OnInit {
 
+  public isWeb = this.platformService.isWeb;
+  public loading = false;
+  public isWaiting = true;
+  public errorMessage = '';
+  public recordId?: string;
+
   constructor(private mediaCapture: MediaCapture,
               private api: ApiService,
-              private alertController: AlertController) {
+              private alertController: AlertController,
+              private platformService: PlatformService) {
   }
 
   ngOnInit() {
+    if (this.isWeb) {
+      return;
+    }
     this.init();
   }
 
@@ -40,7 +51,7 @@ export class HeartCapturePage implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
-            this.alertCallback();
+            this.perform();
           }
         }
       ]
@@ -49,14 +60,22 @@ export class HeartCapturePage implements OnInit {
     return alert.present();
   }
 
-  async alertCallback() {
+  async perform() {
+    this.isWaiting = true;
+    this.errorMessage = '';
+    this.recordId = '';
+
     const video = await this.captureVideo();
     const blob = await this.getBlob(video);
 
+    this.isWaiting = false;
+    this.loading = true;
     try {
-      await this.api.uploadVideo(blob);
+      this.recordId = await this.api.uploadVideo(blob);
     } catch (e) {
-      console.log(e);
+      this.errorMessage = e.message;
+    } finally {
+      this.loading = false;
     }
   }
 
