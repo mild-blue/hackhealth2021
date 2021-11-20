@@ -21,6 +21,8 @@ namespace HotPink.API.Extensions
             var name = patient.Name.FirstOrDefault(x => x.Use == NameUse.Official)
                 ?? patient.Name.FirstOrDefault();
 
+            patientData.Sort((x, y) => x.Created.CompareTo(y.Created));
+            patientData.Reverse();
             return new(patient.Id, name?.ToString() ?? string.Empty, patientData);
         }
 
