@@ -90,22 +90,17 @@ public class PatientController : ApiController
         {
             await file.CopyToAsync(stream);
         }
-
         _log.LogInformation("Uploaded to: {filePath}.", filePath);
 
-        // TODO classify data --> fileName
+        // classify data
         var myurl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification2.json"));
-        var data = JsonSerializer.Deserialize<PatientData>(dataJson) ?? new();
+        _log.LogInformation("URL: {url}", myurl);
 
         string path = $"{myurl}/patient/download/{fileName}";
         try
         {
-            data = await _classificationService.Classify(path);
+            var data = await _classificationService.Classify(path);
             await _patientService.AddPatientData(patientId, data);
-
-            // TODO delete tmp image
-
             return Ok(data);
         }
         catch (ApiException ex) when (ex.Status == HttpStatusCode.BadRequest)
@@ -116,6 +111,11 @@ public class PatientController : ApiController
         catch (ApiException ex)
         {
             return StatusCode((int)ex.Status);
+        }
+        finally
+        {
+            // delete tmp image
+            System.IO.File.Delete(filePath);
         }
     }
 
