@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pathoschild.Http.Client;
 
 using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace HotPink.API.Controllers;
@@ -149,4 +150,62 @@ public class PatientController : ApiController
     [HttpGet("data/{id}")]
     public async Task<ActionResult<PatientData>> AnalyzeVideo(string id) =>
         OkOrNotFound(await _patientService.GetData(id));
+
+    [HttpGet("data/{id}/csv/peaks")]
+    public async Task<IActionResult> ExportPeaksCsv(string id)
+    {
+        var data = await _patientService.GetData(id);
+        if (data is null) return NotFound($"Data with id {id} not found.");
+        return ToCsv(data.Peaks[0], data.Peaks[1], "peeks.csv");
+    }
+
+    [HttpGet("data/{id}/csv/distances")]
+    public async Task<IActionResult> ExportPeaksDistancesCsv(string id)
+    {
+        var data = await _patientService.GetData(id);
+        if (data is null) return NotFound($"Data with id {id} not found.");
+        return ToCsv(data.PeaksDistances, "distances.csv");
+    }
+
+    [HttpGet("data/{id}/csv/pulse_wave")]
+    public async Task<IActionResult> ExportPulseWawesCsv(string id)
+    {
+        var data = await _patientService.GetData(id);
+        if (data is null) return NotFound($"Data with id {id} not found.");
+        return ToCsv(data.PulseWave[0], data.PulseWave[1], "pulse_wave.csv");
+    }
+
+    private string ToCsv(decimal[] xs)
+    {
+        var builder = new StringBuilder();
+        foreach (var x in xs)
+        {
+            builder.AppendLine(x.ToString());
+        }
+        return builder.ToString();
+    }
+
+    private string ToCsv(decimal[] xs, decimal[] ys)
+    {
+        var builder = new StringBuilder();
+        foreach(var (x,y) in xs.Zip(ys))
+        {
+            builder.AppendLine($"{x};{y}");
+        }
+        return builder.ToString();
+    }
+
+    private FileContentResult ToCsv(decimal[] xs, string name)
+    {
+        var csv = ToCsv(xs);
+        var bytes = Encoding.ASCII.GetBytes(csv);
+        return File(bytes, "text/csv", name);
+    }
+
+    private FileContentResult ToCsv(decimal[] xs, decimal[] ys, string name)
+    {
+        var csv = ToCsv(xs, ys);
+        var bytes = Encoding.ASCII.GetBytes(csv);
+        return File(bytes, "text/csv", name);
+    }
 }
