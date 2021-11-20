@@ -31,8 +31,25 @@ export class ChartComponent implements OnChanges {
     console.log(changes);
     if (changes.record && this.record) {
       const dataPoints = this.transformChartData(this.record);
-      this.initChart(dataPoints);
+      const distPoints = this.getPeaksDistancesChartData(this.record);
+      this.initChart('heartRateChart', dataPoints);
+      this.initChart('peakDistancesChart', distPoints);
     }
+  }
+
+  getPeaksDistancesChartData(record: RecordDetail) {
+    const dataPoints: DataPoint[] = [];
+    // eslint-disable-next-line guard-for-in
+    for (const x in record.peaks_distances) {
+      dataPoints.push({
+        x: Number(x),
+        y: record.peaks_distances[x],
+        markerType: 'none',
+        markerColor: defaultMarkerColor
+      });
+    }
+
+    return dataPoints;
   }
 
   transformChartData(record: RecordDetail) {
@@ -57,8 +74,8 @@ export class ChartComponent implements OnChanges {
     return dataPoints;
   }
 
-  initChart(dataPoints: DataPoint[]) {
-    const chart = new CanvasJS.Chart('chartContainer', {
+  initChart(containerId: string, dataPoints: DataPoint[]) {
+    const chart = new CanvasJS.Chart(containerId, {
       backgroundColor: this.isDarkMode ? this.isIos ? '#000000' : '#121212' : '#ffffff',
       theme: this.isDarkMode ? 'dark1' : 'light2', // "light1", "light2", "dark1", "dark2"
       animationEnabled: true,
