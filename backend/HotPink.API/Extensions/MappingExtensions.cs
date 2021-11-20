@@ -16,12 +16,20 @@ namespace HotPink.API.Extensions
             return new(patient.Id, name?.ToString() ?? string.Empty);
         }
 
-        public static PatientDetailDto ToDetailDto(this Patient patient)
+        public static PatientDetailDto ToDetailDto(this Patient patient, List<PatientDataListDto> patientData)
         {
             var name = patient.Name.FirstOrDefault(x => x.Use == NameUse.Official)
                 ?? patient.Name.FirstOrDefault();
 
-            return new(patient.Id, name?.ToString() ?? string.Empty, new ());
+            return new(patient.Id, name?.ToString() ?? string.Empty, patientData);
+        }
+
+        public static PractitionerDetailDto ToDetailDto(this Practitioner practitioner)
+        {
+            var name = practitioner.Name.FirstOrDefault(x => x.Use == NameUse.Official)
+                ?? practitioner.Name.FirstOrDefault();
+
+            return new(practitioner.Id, string.Join(" ", name?.Prefix ?? Array.Empty<string>()) + " " + (name?.ToString() ?? string.Empty));
         }
     }
 }
