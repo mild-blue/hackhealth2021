@@ -18,4 +18,8 @@ export class InvitePatientSuccessPage implements OnInit {
     this.code = this.activatedRoute.snapshot.paramMap.get('code') ?? undefined;
     this.name = this.activatedRoute.snapshot.paramMap.get('name') ?? undefined;
   }
+
+  handleCopy() {
+    // todo
+  }
 }
