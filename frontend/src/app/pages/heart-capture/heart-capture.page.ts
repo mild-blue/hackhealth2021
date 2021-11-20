@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CaptureError, MediaCapture, MediaFile } from '@ionic-native/media-capture/ngx';
 import { Filesystem } from '@capacitor/filesystem';
 import { ApiService } from '../../services/api/api.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { PlatformService } from '../../services/platform/platform.service';
 
 interface VideoCapture {
@@ -33,7 +33,8 @@ export class HeartCapturePage implements OnInit {
   constructor(private mediaCapture: MediaCapture,
               private api: ApiService,
               private alertController: AlertController,
-              private platformService: PlatformService) {
+              private platformService: PlatformService,
+              private navController: NavController) {
   }
 
   ngOnInit() {
@@ -49,9 +50,16 @@ export class HeartCapturePage implements OnInit {
       buttons: [
         {
           text: 'OK',
-          role: 'cancel',
+          role: 'confirm',
           handler: () => {
             this.perform();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            this.navController.navigateBack('/patient');
           }
         }
       ]
@@ -67,6 +75,11 @@ export class HeartCapturePage implements OnInit {
 
     const video = await this.captureVideo();
     const blob = await this.getBlob(video);
+
+    if (!blob) {
+      this.errorMessage = 'Could not process video';
+      return;
+    }
 
     this.isWaiting = false;
     this.loading = true;
@@ -100,8 +113,12 @@ export class HeartCapturePage implements OnInit {
   async getBlob(video: VideoCapture) {
     const path = this.platformService.isAndroid ? video.fullPath : video.localURL;
     console.log('==== READING FROM', path);
-    const contents = await Filesystem.readFile({ path });
-    return this.b64toBlob(contents.data, video.type ?? 'video/quicktime');
+    const permissions = await Filesystem.requestPermissions();
+    console.log('====  Filesystem.requestPermissions()', permissions.publicStorage);
+    if (permissions.publicStorage !== 'denied') {
+      const contents = await Filesystem.readFile({ path });
+      return this.b64toBlob(contents.data, video.type ?? 'video/quicktime');
+    }
   }
 
   b64toBlob(b64Data: string, contentType = '', sliceSize = 512) {
