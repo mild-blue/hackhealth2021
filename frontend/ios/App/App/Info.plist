@@ -57,5 +57,7 @@
   <string>This app requires access to your microphone.</string>
   <key>LSSupportsOpeningDocumentsInPlace</key>
   <true/>
+  <key>UIFileSharingEnabled</key>
+  <true/>
 </dict>
 </plist>

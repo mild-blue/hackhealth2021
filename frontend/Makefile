@@ -23,3 +23,5 @@ run-ios:
 run-ios-live:
 	ionic cap sync ios
 	ionic cap run ios -l --external
+
+#ionic cap sync ios && ionic cap run ios -l --external
