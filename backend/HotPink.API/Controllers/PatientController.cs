@@ -3,6 +3,9 @@ using HotPink.API.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
+using Pathoschild.Http.Client;
+
+using System.Net;
 using System.Text.Json;
 
 namespace HotPink.API.Controllers;
@@ -18,11 +21,15 @@ public class PatientController : ApiController
 
     private readonly InvitationService _invitationService;
     private readonly PatientService _patientService;
+    private readonly ClassificationService _classificationService;
+    private readonly ILogger<PatientController> _log;
 
-    public PatientController(InvitationService invitationService, PatientService patientService)
+    public PatientController(InvitationService invitationService, PatientService patientService, ClassificationService classificationService, ILogger<PatientController> log)
     {
         _invitationService = invitationService;
         _patientService = patientService;
+        _classificationService = classificationService;
+        _log = log;
     }
 
     /// <summary>
@@ -64,6 +71,7 @@ public class PatientController : ApiController
     /// <param name="patientId"></param>
     /// <param name="file"></param>
     [HttpPost("{patientId}/submit")]
+    [RequestSizeLimit(500_000_000)]
     public async Task<ActionResult<PatientData>> AnalyzeVideo(string patientId, IFormFile file)
     {
         if (!await _patientService.PatientExists(patientId))
@@ -75,15 +83,35 @@ public class PatientController : ApiController
         var extension = Path.GetExtension(file.FileName);
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var filePath = Path.Combine(folder, $"{fileId}{extension}");
+        var fileName = Path.GetFileName(filePath);
+
+        _log.LogInformation("Uploading to: {filePath}.", filePath);
         using (var stream = System.IO.File.OpenWrite(filePath))
         {
             await file.CopyToAsync(stream);
         }
 
-        // TODO classify data
-        
+        _log.LogInformation("Uploaded to: {filePath}.", filePath);
+
+        // TODO classify data --> fileName
+        var myurl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification2.json"));
         var data = JsonSerializer.Deserialize<PatientData>(dataJson) ?? new();
+
+        string path = $"{myurl}/patient/download/{fileName}";
+        try
+        {
+            data = await _classificationService.Classify(path);
+        }
+        catch (ApiException ex) when (ex.Status == HttpStatusCode.BadRequest)
+        {
+            var raw = await ex.Response.AsRawJsonObject();
+            return StatusCode((int)ex.Status, raw["message"]?.ToString());
+        }
+        catch (ApiException ex)
+        {
+            return StatusCode((int)ex.Status);
+        }
 
         await _patientService.AddPatientData(patientId, data);
 
@@ -92,21 +120,25 @@ public class PatientController : ApiController
         return Ok(data);
     }
 
-    [HttpGet("download/{id}")]
-    public IActionResult Download(Guid id)
+    /// <summary>
+    /// Download recorder video.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    [HttpGet("download/{fileName}")]
+    public IActionResult Download(string fileName)
     {
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        var files = Directory.GetFiles(folder);
-        var filePath = files.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == id.ToString());
+        var filePath = Path.Combine(folder, fileName);
 
-        if (!string.IsNullOrEmpty(filePath))
+        if (System.IO.File.Exists(filePath))
         {
             var stream = System.IO.File.OpenRead(filePath);
             return File(stream, "video/quicktime", Path.GetFileName(filePath));
         }
         else
         {
-            return NotFound($"File with id {id} not found.");
+            return NotFound($"File {fileName} not found.");
         }
     }
 

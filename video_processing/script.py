@@ -1,3 +1,7 @@
+import os
+import requests
+import uuid
+import urllib.parse
 import cv2
 import numpy as np
 import scipy.signal
@@ -9,11 +13,30 @@ app = Flask(__name__)
 
 @app.get("/<path:file_url>")
 def get_heart_rate(file_url):
-    cap = cv2.VideoCapture(file_url)
-    # cap = cv2.VideoCapture('video-20211120-102943-0560fd61.mov')
+    print(file_url)
+    file_url = urllib.parse.unquote(file_url)
+    print(file_url)
+    to_verify = "localhost" not in file_url
+    file_url = file_url.replace("localhost","host.docker.internal")
+    print(file_url)
+
+    u = requests.get(file_url, verify=to_verify)
+    path = "/usr/share/" + str(uuid.uuid4())
+    print(path)
+
+    with open(path, "wb+") as f:
+        f.write(u.content)
+
+    cap = cv2.VideoCapture(path)
+
+    assert cap.isOpened()
+
     fps = cap.get(cv2.CAP_PROP_FPS)  # frames per second
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_duration = frame_count / fps
+
+    print("video_duration: ")
+    print(video_duration)
 
     if video_duration < 60:
         return make_response(jsonify({
@@ -22,7 +45,14 @@ def get_heart_rate(file_url):
         }), 400
         )
 
+    print("fps: ")
+    print(fps)
+
     proper_video_length_in_frames = int(60 * fps)
+
+    print("proper_video_length_in_frames")
+    print(proper_video_length_in_frames)
+
     assert cap.isOpened()
 
     full_video = []
@@ -33,6 +63,10 @@ def get_heart_rate(file_url):
         im = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(im)
         full_video.append(int(np.sum(v)))
+
+    print("full_video")
+    print(len(full_video))
+
     values = full_video[:proper_video_length_in_frames]
 
     maxi = np.max(values)
@@ -63,13 +97,15 @@ def get_heart_rate(file_url):
 
     # BPM
     bpm = len(peaks)
+    print("bpm")
+    print(bpm)
+
     if bpm <= 50:
         return make_response(jsonify({
             'error': 'Invalid input',
             'message': 'Poor video quality.'
         }), 400
         )
-    print(bpm)
 
     # RR intervals
     plt.figure(2)
@@ -77,6 +113,8 @@ def get_heart_rate(file_url):
     ax = plt.gca()
     ax.set_ylim([0, 1])
     plt.show()
+
+    os.remove(path)
 
     return make_response(jsonify({
         "pulse_wave": pulse_wave,
@@ -87,4 +125,5 @@ def get_heart_rate(file_url):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # get_heart_rate("https://hotpink.azurewebsites.net/patient/download/4495f796-ec3b-4e5f-8efb-e225574c30f5.mov")
+    app.run(host='0.0.0.0', port=80)

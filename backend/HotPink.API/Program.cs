@@ -24,6 +24,7 @@ builder.Services.AddSwaggerGen(c =>
 // business logic
 builder.Services.AddSingleton<InvitationService>();
 builder.Services.AddSingleton<PatientService>();
+builder.Services.AddHttpClient<ClassificationService>();
 
 // FHIR
 builder.Services.AddSingleton(provider =>
