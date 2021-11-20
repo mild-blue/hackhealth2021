@@ -23,5 +23,13 @@ namespace HotPink.API.Extensions
 
             return new(patient.Id, name?.ToString() ?? string.Empty, new ());
         }
+
+        public static PractitionerDetailDto ToDetailDto(this Practitioner practitioner)
+        {
+            var name = practitioner.Name.FirstOrDefault(x => x.Use == NameUse.Official)
+                ?? practitioner.Name.FirstOrDefault();
+
+            return new(practitioner.Id, string.Join(" ", name?.Prefix ?? Array.Empty<string>()) + " " + (name?.ToString() ?? string.Empty));
+        }
     }
 }

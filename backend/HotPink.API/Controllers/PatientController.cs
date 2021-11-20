@@ -11,6 +11,8 @@ public class PatientController : ApiController
     public record PatientDetailDto(string Id, string Name, List<PatientDataDto> Data);
     public record AcceptInvitationDto(string InvitationCode);
     public record PatientDataDto(DateTime DateTime, bool IsOk);
+    public record InvitationAcceptedDto(Guid SessionId, PractitionerDetailDto Doctor);
+    public record PractitionerDetailDto(string Id, string Name);
 
     private readonly InvitationService _invitationService;
     private readonly PatientService _patientService;
@@ -28,7 +30,7 @@ public class PatientController : ApiController
     [HttpGet("{id}")]
     public async Task<ActionResult<PatientDetailDto>> GetPatientDetail(string id)
     {
-        return OkOrNotFound(await _patientService.GetDetail(id));
+        return OkOrNotFound(await _patientService.GetPatientDetail(id));
     }
 
     /// <summary>
@@ -37,7 +39,7 @@ public class PatientController : ApiController
     /// <param name="invitation"></param>
     /// <returns></returns>
     [HttpPost("accept")]
-    public async Task<ActionResult<Guid>> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
+    public async Task<ActionResult<InvitationAcceptedDto>> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
     {
         var result = _invitationService.Accept(invitation);
         if (result is not null)
@@ -45,7 +47,8 @@ public class PatientController : ApiController
             var sessionId = Guid.NewGuid();
             await _patientService.EstablishSession(sessionId, result.PatientId);
             await _patientService.AddToDoctor(result.DoctorId, result.PatientId);
-            return sessionId;
+            var doctor = await _patientService.GetDoctorDetail(result.DoctorId);
+            return Ok(new InvitationAcceptedDto(sessionId, doctor!));
         }
         else
         {
@@ -64,7 +67,9 @@ public class PatientController : ApiController
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var filePath = Path.Combine(folder, "video.mov");
         using var stream = System.IO.File.OpenWrite(filePath);
-        await file.CopyToAsync(stream);        
+        await file.CopyToAsync(stream);
+
+        await _patientService.AddSessionData(sessionId, 66);
 
         return Ok(new
         {

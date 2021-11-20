@@ -5,6 +5,7 @@ using HotPink.API.Entities;
 using HotPink.API.Extensions;
 
 using System.Collections.Concurrent;
+using System.Drawing;
 using System.Net;
 
 using static HotPink.API.Controllers.DoctorController;
@@ -16,6 +17,8 @@ namespace HotPink.API.Services
 {
     public class PatientService
     {
+        private const string SYSTEM = "https://hotpink.azurewebsites.net";
+        private const string CODE = "vital-signs-hotpink";
         private readonly ConcurrentDictionary<Guid, string> _sessions = new();
         private readonly FhirClient _fhir;
 
@@ -38,12 +41,21 @@ namespace HotPink.API.Services
             }
         }
 
-        public async Task AddSessionData(Guid sessionId)
+        public async Task AddSessionData(Guid sessionId, double bpm)
         {
             if (_sessions.TryGetValue(sessionId, out var patientId))
             {
-                var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+                // BPM
+                var observation = new Observation
+                {
+                    Status = ObservationStatus.Final,
+                    Subject = new ResourceReference($"Patient/{patientId}"),
+                    Code = new CodeableConcept(SYSTEM, CODE)
+                };
 
+                observation.Category.Add(new CodeableConcept(SYSTEM, CODE));
+                observation.Value = new Quantity((decimal)bpm, "BPM", SYSTEM);
+                await _fhir.CreateAsync(observation);
             }
         }
 
@@ -80,7 +92,7 @@ namespace HotPink.API.Services
             }
         }
 
-        public async Task<PatientDetailDto?> GetDetail(string patientId)
+        public async Task<PatientDetailDto?> GetPatientDetail(string patientId)
         {
             try
             {
@@ -91,6 +103,19 @@ namespace HotPink.API.Services
                     .OfType<Observation>()
                     .ToList();
                 return patient.ToDetailDto();
+            }
+            catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+        }
+
+        public async Task<PractitionerDetailDto?> GetDoctorDetail(string doctorId)
+        {
+            try
+            {
+                var doctor = await _fhir.ReadAsync<Practitioner>($"Practitioner/{doctorId}");
+                return doctor.ToDetailDto();
             }
             catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
             {
