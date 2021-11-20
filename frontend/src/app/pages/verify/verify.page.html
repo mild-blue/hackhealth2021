@@ -9,18 +9,26 @@
 
 <ion-content fullscreen="true">
   <main>
-    <h1>Insert an invitation code from your doctor</h1>
-
-    <ion-input [(ngModel)]="code" autofocus="autofocus" inputmode="decimal" type="number"></ion-input>
-
-    <div class="buttons">
+    <section>
+      <h1>Invitation code from your doctor</h1>
+      <ion-input [(ngModel)]="code" autofocus="autofocus" inputmode="decimal" type="number"></ion-input>
       <ion-button (click)="verify()"
-                  [disabled]="!code">
+                  [disabled]="!code"
+                  color="primary"
+                  expand="block">
         Verify
       </ion-button>
-      <ion-button (click)="continueWithoutCode()">
+    </section>
+
+    <section>
+      <h3>Do not have an invitation code?</h3>
+      <p>Continue without sharing your data to anyone.</p>
+      <ion-button (click)="continueWithoutCode()"
+                  color="primary"
+                  expand="block"
+                  fill="outline">
         Continue without invitation code
       </ion-button>
-    </div>
+    </section>
   </main>
 </ion-content>

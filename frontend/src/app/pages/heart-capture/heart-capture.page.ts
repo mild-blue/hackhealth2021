@@ -98,7 +98,9 @@ export class HeartCapturePage implements OnInit {
   }
 
   async getBlob(video: VideoCapture) {
-    const contents = await Filesystem.readFile({ path: video.localURL });
+    const path = this.platformService.isAndroid ? video.fullPath : video.localURL;
+    console.log('==== READING FROM', path);
+    const contents = await Filesystem.readFile({ path });
     return this.b64toBlob(contents.data, video.type ?? 'video/quicktime');
   }
 

@@ -1,0 +1,8 @@
+ion-input {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+section + section {
+  border-top: 1px solid var(--grey);
+}
