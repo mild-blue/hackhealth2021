@@ -2,6 +2,7 @@
 
 using Pathoschild.Http.Client;
 
+using System.Text.Json;
 using System.Web;
 
 namespace HotPink.API.Services
@@ -19,8 +20,8 @@ namespace HotPink.API.Services
         {
             fileUrl = HttpUtility.UrlEncode(fileUrl);
             var response = await _client.GetAsync(fileUrl);
-
-            return await response.As<PatientData>();
+            var json = await response.AsString();
+            return JsonSerializer.Deserialize<PatientData>(json) ?? new();
         }
     }
 }

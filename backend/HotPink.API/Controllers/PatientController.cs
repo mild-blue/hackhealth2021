@@ -102,6 +102,11 @@ public class PatientController : ApiController
         try
         {
             data = await _classificationService.Classify(path);
+            await _patientService.AddPatientData(patientId, data);
+
+            // TODO delete tmp image
+
+            return Ok(data);
         }
         catch (ApiException ex) when (ex.Status == HttpStatusCode.BadRequest)
         {
@@ -112,12 +117,6 @@ public class PatientController : ApiController
         {
             return StatusCode((int)ex.Status);
         }
-
-        await _patientService.AddPatientData(patientId, data);
-
-        // TODO delete tmp image
-
-        return Ok(data);
     }
 
     /// <summary>
