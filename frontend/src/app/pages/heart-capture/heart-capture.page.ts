@@ -4,6 +4,7 @@ import { Filesystem } from '@capacitor/filesystem';
 import { ApiService } from '../../services/api/api.service';
 import { AlertController, NavController } from '@ionic/angular';
 import { PlatformService } from '../../services/platform/platform.service';
+import { ActivatedRoute } from '@angular/router';
 
 interface VideoCapture {
   name: string;
@@ -31,18 +32,39 @@ export class HeartCapturePage implements OnInit {
   public errorMessage = '';
   public recordId?: string;
 
+  public length = 30;
+
   constructor(private mediaCapture: MediaCapture,
               private api: ApiService,
               private alertController: AlertController,
               private platformService: PlatformService,
+              private activatedRoute: ActivatedRoute,
               private navController: NavController) {
   }
 
   ngOnInit() {
+
+  }
+
+  setDefaults() {
+    this.isCancelled = false;
+    this.isWaiting = true;
+    this.errorMessage = '';
+    this.recordId = '';
+  }
+
+  ionViewWillEnter() {
+    const length = this.activatedRoute.snapshot.paramMap.get('length');
+    this.length = length ? Number(length) : 30;
+    this.setDefaults();
+  }
+
+  ionViewDidEnter() {
     if (this.isWeb) {
       this.navController.navigateBack('/patient');
       return;
     }
+
     this.perform();
   }
 
@@ -71,10 +93,7 @@ export class HeartCapturePage implements OnInit {
   }
 
   async perform() {
-    this.isCancelled = false;
-    this.isWaiting = true;
-    this.errorMessage = '';
-    this.recordId = '';
+    this.setDefaults();
 
     const video = await this.captureVideo();
     const blob = await this.getBlob(video);
@@ -97,7 +116,7 @@ export class HeartCapturePage implements OnInit {
 
   async captureVideo(): Promise<VideoCapture> {
     try {
-      const result: MediaFile[] | CaptureError = await this.mediaCapture.captureVideo({ duration: 60 });
+      const result: MediaFile[] | CaptureError = await this.mediaCapture.captureVideo({ duration: this.length });
       if ('code' in result) {
         return;
       }

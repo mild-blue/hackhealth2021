@@ -8,63 +8,72 @@
 
 <ion-content fullscreen="true">
   <main>
-    <ng-container *ngIf="loading">
+    <section *ngIf="loading">
       <h1>Good job!</h1>
       <h2>We are uploading and processing your video. Please wait.</h2>
       <app-loading></app-loading>
-    </ng-container>
+    </section>
 
-    <ng-container *ngIf="!loading && isWaiting">
+    <section *ngIf="!loading && isWaiting">
       <ng-container *ngIf="!isCancelled else cancelled">
         <h2>Camera is starting...</h2>
       </ng-container>
       <ng-template #cancelled>
         <h2>Recording was cancelled</h2>
-        <ion-button (click)="perform()"
-                    color="primary"
-                    type="submit"
-                    expand="block">
-          Record again
-        </ion-button>
-        <ion-button [routerLink]="['/']"
-                    color="primary"
-                    fill="outline"
-                    type="submit"
-                    expand="block">
-          Return to homepage
-        </ion-button>
+        <div class="buttons">
+          <ion-button (click)="perform()"
+                      color="primary"
+                      type="submit"
+                      expand="block">
+            Record again
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+          <ng-container [ngTemplateOutlet]="backToHomeButton"></ng-container>
+        </div>
       </ng-template>
-    </ng-container>
+    </section>
 
-    <ng-container *ngIf="!loading && !isWaiting">
+    <section *ngIf="!loading && !isWaiting">
       <ng-container *ngIf="recordId else error">
         <h2>Analysis is done</h2>
-        <ion-button [routerLink]="['/patient', 'history', recordId]"
-                    color="primary"
-                    type="submit"
-                    expand="block">
-          See analysis result
-        </ion-button>
-        <ion-button [routerLink]="['/']"
-                    color="primary"
-                    fill="outline"
-                    type="submit"
-                    expand="block">
-          Return to homepage
-        </ion-button>
+        <div class="buttons">
+          <ion-button [routerLink]="['/patient', 'history', recordId]"
+                      color="primary"
+                      type="submit"
+                      expand="block">
+            See analysis result
+          </ion-button>
+          <ng-container [ngTemplateOutlet]="backToHomeButton"></ng-container>
+        </div>
       </ng-container>
-    </ng-container>
+    </section>
   </main>
 </ion-content>
 
 <ng-template #error>
   <h2>Oh no, something is wrong with your video.</h2>
-  <p *ngIf="errorMessage.length">{{ errorMessage }}</p>
-  <ion-button (click)="perform()"
-              color="primary"
-              type="submit"
-              expand="block">
-    Record another one
-  </ion-button>
+  <p *ngIf="errorMessage.length" class="error">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    {{ errorMessage }}
+  </p>
+  <div class="buttons">
+    <ion-button (click)="perform()"
+                color="primary"
+                type="submit"
+                expand="block">
+      Record another one
+    </ion-button>
+    <ng-container [ngTemplateOutlet]="backToHomeButton"></ng-container>
+  </div>
 </ng-template>
 
+<ng-template #backToHomeButton>
+  <ion-button [routerLink]="['/']"
+              color="primary"
+              fill="outline"
+              type="submit"
+              expand="block">
+    <ion-icon name="chevron-back-outline" slot="start"></ion-icon>
+    Return to homepage
+  </ion-button>
+</ng-template>

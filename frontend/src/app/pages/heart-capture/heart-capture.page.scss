@@ -1,0 +1,21 @@
+.buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+
+  ion-button + ion-button {
+    margin-top: 10px;
+  }
+}
+
+.error {
+  text-align: center;
+  color: var(--ion-color-warning);
+
+  ion-icon {
+    font-size: 18px;
+    position: relative;
+    top: 3px;
+    margin-right: 3px;
+  }
+}
