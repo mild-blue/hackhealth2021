@@ -45,3 +45,7 @@ footer {
   top: -5px;
   opacity: 0.5;
 }
+
+section + section {
+  margin-top: 40px;
+}
