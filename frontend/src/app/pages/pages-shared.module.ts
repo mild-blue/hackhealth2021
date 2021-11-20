@@ -5,11 +5,13 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RecordListComponent } from '../components/record-list/record-list.component';
+import { ChartComponent } from '../components/chart/chart.component';
 
 @NgModule({
   declarations: [
     LoadingComponent,
-    RecordListComponent
+    RecordListComponent,
+    ChartComponent
   ],
   imports: [
     CommonModule,
@@ -19,7 +21,8 @@ import { RecordListComponent } from '../components/record-list/record-list.compo
   ],
   exports: [
     LoadingComponent,
-    RecordListComponent
+    RecordListComponent,
+    ChartComponent
   ]
 })
 export class PagesSharedModule {
