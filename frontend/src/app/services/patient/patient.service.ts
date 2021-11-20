@@ -61,7 +61,7 @@ export class PatientService {
     return this.http.post(
       `${environment.apiUrl}/Patient/accept`,
       {
-        invitationCode
+        invitationCode: `${invitationCode}`
       }
     ).pipe(
       map((response: unknown) => {

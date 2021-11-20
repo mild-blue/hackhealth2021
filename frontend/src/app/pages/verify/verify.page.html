@@ -10,19 +10,19 @@
 <ion-content fullscreen="true">
   <main>
     <section>
-      <h1>Invitation code from your doctor</h1>
-      <ion-input [(ngModel)]="code" autofocus="autofocus" inputmode="decimal" type="number"></ion-input>
+      <h3>Invitation code from your doctor</h3>
+      <ion-input [(ngModel)]="code" inputmode="decimal" type="number"></ion-input>
       <ion-button (click)="verify()"
                   [disabled]="!code"
                   color="primary"
                   expand="block">
-        Verify
+        Verify code
       </ion-button>
     </section>
 
     <section>
       <h3>Do not have an invitation code?</h3>
-      <p>Continue without sharing your data to anyone.</p>
+      <p>No worries! You can still use the app.</p>
       <ion-button (click)="continueWithoutCode()"
                   color="primary"
                   expand="block"
