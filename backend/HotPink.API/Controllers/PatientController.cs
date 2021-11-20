@@ -68,7 +68,7 @@ public class PatientController : ApiController
     [HttpPost("{patientId}/submit")]
     public async Task<IActionResult> AnalyzeVideo(string patientId, IFormFile file)
     {
-        if(await _patientService.GetPatientDetail(patientId) is null)
+        if (!await _patientService.PatientExists(patientId))
         {
             return NotFound($"Patient with id {patientId} not foound.");
         }
@@ -109,7 +109,7 @@ public class PatientController : ApiController
         if (!string.IsNullOrEmpty(filePath))
         {
             var stream = System.IO.File.OpenRead(filePath);
-            return File(stream, "video/quicktime", Path.GetFileName(filePath)); 
+            return File(stream, "video/quicktime", Path.GetFileName(filePath));
         }
         else
         {

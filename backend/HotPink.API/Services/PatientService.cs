@@ -48,14 +48,17 @@ namespace HotPink.API.Services
 
         public async Task<bool> AddPatientData(string patientId, PatientData data)
         {
-            var patient = await GetPatientDetail(patientId);
-            if (patient is null) return false;
+            if(!await PatientExists(patientId))
+            {
+                return false;
+            }
 
             var observation = new Observation
             {
                 Status = ObservationStatus.Final,
                 Subject = new ResourceReference($"Patient/{patientId}"),
-                Code = new CodeableConcept(SYSTEM, CODE)
+                Code = new CodeableConcept(SYSTEM, CODE),
+                Issued = DateTimeOffset.Now
             };
 
             observation.Category.Add(new CodeableConcept(SYSTEM, CODE));
@@ -161,6 +164,19 @@ namespace HotPink.API.Services
             }
         }
 
+        public async Task<bool> PatientExists(string patientId)
+        {
+            try
+            {
+                var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+                return true;
+            }
+            catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
+            {
+                return false;
+            }
+        }
+
         public async Task<PatientDetailDto?> GetPatientDetail(string patientId)
         {
             try
@@ -177,6 +193,7 @@ namespace HotPink.API.Services
                     {
                         var data = new PatientData
                         {
+                            Created = observation.Issued?.UtcDateTime,
                             Bpm = (observation.Value as Quantity)?.Value ?? default,
                             Peaks = Deserialize2D(observation.Component, PEAKS),
                             PeaksDistances = Deserialize1D(observation.Component, DISTANCES),
