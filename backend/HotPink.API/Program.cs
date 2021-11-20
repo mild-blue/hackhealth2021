@@ -34,6 +34,12 @@ builder.Services.AddSingleton(provider =>
     return client;
 });
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder => builder.WithOrigins("*"));
+});
+
 var app = builder.Build();
 
 // Swagger
