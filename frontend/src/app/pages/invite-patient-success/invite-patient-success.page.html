@@ -5,9 +5,18 @@
     <div class="success">
       <h1>Great!</h1>
       <h2>Share this invitation code with {{ name }}:</h2>
-      <div class="code">
-        {{ code }}
-      </div>
+
+      <section>
+        <div class="code">
+          {{ code }}
+        </div>
+        <ion-button (click)="handleCopy()"
+                    color="primary"
+                    fill="outline">
+          Copy
+          <ion-icon name="copy-outline" slot="end"></ion-icon>
+        </ion-button>
+      </section>
     </div>
   </main>
 </ion-content>
@@ -16,10 +25,8 @@
   <ion-toolbar>
     <ion-button [routerLink]="['/doctor']"
                 color="primary"
-                type="submit"
                 expand="block">
       Got it!
-      <ion-icon slot="end" name="checkmark"></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-footer>

@@ -19,17 +19,4 @@ h1, h2, h3, h4, h5 {
   font-weight: 700;
 }
 
-.buttons {
-  display: flex;
-  flex-direction: column;
 
-  ion-button + ion-button {
-    margin-top: 10px;
-  }
-
-  ion-button {
-    strong {
-      margin-left: 5px;
-    }
-  }
-}

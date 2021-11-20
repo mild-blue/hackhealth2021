@@ -3,7 +3,25 @@
 <ion-content fullscreen="true">
   <main>
     <ng-container *ngIf="isWeb">
-      <h3>Run app on your smartphone or tablet to capture heartbeat.</h3>
+      <div class="is-web">
+        <h3>Heart rate measurement is only available on mobile devices.</h3>
+        <p>Run app on your smartphone or tablet to capture heartbeat.</p>
+        <div class="buttons">
+          <ion-button [routerLink]="['/patient/history']"
+                      color="primary"
+                      type="submit"
+                      expand="block">
+            Explore your measurement history
+          </ion-button>
+          <ion-button [routerLink]="['/patient/measure']"
+                      color="primary"
+                      fill="outline"
+                      type="submit"
+                      expand="block">
+            Go back
+          </ion-button>
+        </div>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="loading">
@@ -45,20 +63,3 @@
   </ion-button>
 </ng-template>
 
-<ion-footer *ngIf="isWeb">
-  <ion-toolbar>
-    <ion-button [routerLink]="['/patient/history']"
-                color="primary"
-                type="submit"
-                expand="block">
-      Explore your measurement history
-    </ion-button>
-    <ion-button [routerLink]="['/patient/measure']"
-                color="primary"
-                fill="outline"
-                type="submit"
-                expand="block">
-      Go back
-    </ion-button>
-  </ion-toolbar>
-</ion-footer>

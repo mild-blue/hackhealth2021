@@ -14,6 +14,10 @@ app = Flask(__name__)
 @app.get("/<path:file_url>")
 def get_heart_rate(file_url):
     print(file_url)
+
+    if "https://" not in file_url:
+        file_url = file_url.replace("https:/", "https://")
+
     file_url = urllib.parse.unquote(file_url)
     print(file_url)
     to_verify = "localhost" not in file_url
