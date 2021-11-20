@@ -19,6 +19,11 @@ namespace HotPink.API.Services
     {
         private const string SYSTEM = "https://hotpink.azurewebsites.net";
         private const string CODE = "vital-signs-hotpink";
+        private const string WAVE = "wave-hotpink";
+        private const string PEAKS = "peaks-hotpink";
+        private const string DISTANCES = "distances-hotpink";
+
+
         private readonly ConcurrentDictionary<Guid, string> _sessions = new();
         private readonly FhirClient _fhir;
 
@@ -41,11 +46,11 @@ namespace HotPink.API.Services
             }
         }
 
-        public async Task<bool> AddPatientData(string patientId, double bpm)
+        public async Task<bool> AddPatientData(string patientId, PatientData data)
         {
             var patient = await GetPatientDetail(patientId);
-            if(patient is null) return false;
-            
+            if (patient is null) return false;
+
             var observation = new Observation
             {
                 Status = ObservationStatus.Final,
@@ -56,22 +61,28 @@ namespace HotPink.API.Services
             observation.Category.Add(new CodeableConcept(SYSTEM, CODE));
 
             // BPM - scalar
-            observation.Value = new Quantity((decimal)bpm, "BPM", SYSTEM);
+            observation.Value = new Quantity(data.Bpm, "BPM", SYSTEM);
             await _fhir.CreateAsync(observation);
 
-            // sinusoida
-            // array x,y
-
+            // pulse wave 2D array
             var test = new SampledData
             {
 
             };
 
-            // array časů kde jsou peaky
-            // array x
+            // peaks 2D array
 
-            // vzdálenost mezi peaky
-            // array x
+
+            // distances 1D array
+            var a = new[] { 10m, 20m, 10m, 20m, 10m };
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, DISTANCES),
+                Value = new SampledData
+                {
+                    Data = Serialize1D(a)
+                }
+            });
 
             return true;
         }
@@ -114,15 +125,23 @@ namespace HotPink.API.Services
             try
             {
                 var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
-                var data = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}", $"code={CODE}" }))
+                var observations = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}", $"code={CODE}" }))
                     .Entry
                     .Select(x => x.Resource)
                     .OfType<Observation>()
                     .ToList();
 
+                var patientData = observations
+                    .Select(observations =>
+                    {
+                        var data = new PatientData
+                        {
+                            Bpm = (observations.Value as Quantity)?.Value ?? default
+                        };
+                        return data;
+                    }).ToList();
 
-
-                return patient.ToDetailDto();
+                return patient.ToDetailDto(patientData);
             }
             catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
             {

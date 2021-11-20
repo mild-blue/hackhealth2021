@@ -1,18 +1,21 @@
-﻿using HotPink.API.Services;
+﻿using HotPink.API.Entities;
+using HotPink.API.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
 using System;
+using System.Drawing;
 
 namespace HotPink.API.Controllers;
 
 public class PatientController : ApiController
 {
-    public record PatientDetailDto(string Id, string Name, List<PatientDataDto> Data);
+    public record PatientDetailDto(string Id, string Name, List<PatientData> Data);
     public record AcceptInvitationDto(string InvitationCode);
-    public record PatientDataDto(DateTime DateTime, bool IsOk);
-    public record InvitationAcceptedDto(string PatientId, PractitionerDetailDto Doctor);
+    public record InvitationAcceptedDto(string Id, PractitionerDetailDto Doctor);
     public record PractitionerDetailDto(string Id, string Name);
+
+
 
     private readonly InvitationService _invitationService;
     private readonly PatientService _patientService;
@@ -69,7 +72,12 @@ public class PatientController : ApiController
         using var stream = System.IO.File.OpenWrite(filePath);
         await file.CopyToAsync(stream);
 
-        if(!await _patientService.AddPatientData(patientId, 66))
+        // TODO classify data
+
+        if (!await _patientService.AddPatientData(patientId, new PatientData
+        {
+            Bpm = 66m
+        }))
         {
             return NotFound($"Patient with id {patientId} not foound.");
         }

@@ -2,8 +2,8 @@
 {
     public class PatientData
     {
-        public Guid Id { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime Created { get; set; }
+        
         public DataStatus State { get; set; }
         public decimal Bpm { get; set; }
     }
