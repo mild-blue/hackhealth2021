@@ -10,6 +10,8 @@ from matplotlib import pyplot as plt
 
 app = Flask(__name__)
 
+def is_near(value, threshold, delta):
+    return abs(value - threshold) < delta
 
 @app.get("/<path:file_url>")
 def get_heart_rate(file_url):
@@ -42,7 +44,7 @@ def get_heart_rate(file_url):
     print("video_duration: ")
     print(video_duration)
 
-    if video_duration < 60:
+    if (not is_near(video_duration, 30, 0.5)) and (not is_near(video_duration, 60, 0.5)):
         return make_response(jsonify({
             'error': 'Invalid input',
             'message': 'Video is too short.'
@@ -71,7 +73,7 @@ def get_heart_rate(file_url):
     print("full_video")
     print(len(full_video))
 
-    values = full_video[:proper_video_length_in_frames]
+    values = full_video
 
     maxi = np.max(values)
     mini = np.min(values)
@@ -101,6 +103,7 @@ def get_heart_rate(file_url):
 
     # BPM
     bpm = len(peaks)
+    bpm *= round(60/video_duration)
     print("bpm")
     print(bpm)
 
