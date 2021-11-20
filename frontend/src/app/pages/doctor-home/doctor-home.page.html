@@ -1,9 +1,27 @@
-<ion-header>
+<ion-header translucent="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>doctor-home</ion-title>
+    <ion-title>My patients</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ng-container *ngIf="patients.length else noPatients">
+    <ion-list>
+      <ion-item *ngFor="let p of patients">
+        <ion-label>{{ p.name }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
 </ion-content>
+
+<ion-footer class="ion-no-border fab-button-footer">
+  <ion-toolbar class="ion-no-padding" style="--min-height: 0; --background: transparent">
+    <ion-fab-button [routerLink]="['/invite-patient']" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-toolbar>
+</ion-footer>
+
+<ng-template #noPatients>
+  <i>Continue by inviting a patient</i>
+</ng-template>

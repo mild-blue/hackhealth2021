@@ -1,0 +1,16 @@
+.fab-button-footer {
+  pointer-events: none; // allow to click on element behind
+
+  ion-fab-button {
+    float: right;
+    margin: 0 16px 16px 0;
+    pointer-events: all;
+  }
+}
+
+i {
+  opacity: 0.5;
+  width: 100%;
+  text-align: center;
+  display: block;
+}

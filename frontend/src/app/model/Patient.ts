@@ -1,6 +1,7 @@
 import { Doctor } from './Doctor';
 
 export interface Patient {
-  sessionId: string;
+  id: string;
+  name?: string;
   doctor?: Doctor;
 }

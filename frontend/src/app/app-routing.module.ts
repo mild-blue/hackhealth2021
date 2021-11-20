@@ -32,6 +32,11 @@ const routes: Routes = [
     path: 'patient-history',
     canActivate: [PatientGuard],
     loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
+  },
+  {
+    path: 'invite-patient',
+    canActivate: [DoctorGuard],
+    loadChildren: () => import('./pages/invite-patient/invite-patient.module').then( m => m.InvitePatientPageModule)
   }
 ];
 

@@ -1,0 +1,24 @@
+<ion-header translucent="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="doctor" text="Back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Invite patient</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button (click)="invitePatient()"
+                color="primary"
+                type="submit"
+                expand="block">
+      Invite patient
+      <ion-icon slot="end" name="checkmark"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

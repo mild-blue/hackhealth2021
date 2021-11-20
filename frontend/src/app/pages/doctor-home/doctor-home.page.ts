@@ -1,15 +1,27 @@
 import { Component, OnInit } from '@angular/core';
+import { DoctorService } from '../../services/doctor/doctor.service';
+import { Patient } from '../../model/Patient';
 
 @Component({
   selector: 'app-doctor-home',
   templateUrl: './doctor-home.page.html',
-  styleUrls: ['./doctor-home.page.scss'],
+  styleUrls: ['./doctor-home.page.scss']
 })
 export class DoctorHomePage implements OnInit {
 
-  constructor() { }
+  patients: Patient[] = [];
+
+  constructor(private doctorService: DoctorService) {
+  }
 
   ngOnInit() {
   }
 
+  async initMyPatients() {
+    try {
+      this.patients = await this.doctorService.getMyPatients();
+    } catch (e) {
+
+    }
+  }
 }

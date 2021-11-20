@@ -17,7 +17,7 @@ export class PatientService {
   }
 
   public loginAnonymously(): Patient {
-    const patient: Patient = { sessionId: '1' };
+    const patient: Patient = { id: '1' };
     this.login(patient);
     return patient;
   }
