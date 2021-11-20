@@ -26,3 +26,12 @@ main {
     font-size: 82px;
   }
 }
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+
+  ion-button + ion-button {
+    margin-top: 10px;
+  }
+}

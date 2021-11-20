@@ -8,6 +8,7 @@ import { RecordListComponent } from '../components/record-list/record-list.compo
 import { ChartComponent } from '../components/chart/chart.component';
 import { CardComponent } from '../components/card/card.component';
 import { RecordItemComponent } from '../components/record-item/record-item.component';
+import { PatientItemComponent } from '../components/patient-item/patient-item.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { RecordItemComponent } from '../components/record-item/record-item.compo
     RecordListComponent,
     ChartComponent,
     CardComponent,
-    RecordItemComponent
+    RecordItemComponent,
+    PatientItemComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { RecordItemComponent } from '../components/record-item/record-item.compo
     LoadingComponent,
     RecordListComponent,
     ChartComponent,
-    CardComponent
+    CardComponent,
+    PatientItemComponent
   ]
 })
 export class PagesSharedModule {

@@ -1,0 +1,32 @@
+.patient {
+  display: flex;
+  align-items: center;
+  border: 0.5px solid var(--grey);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  min-height: 50px;
+  cursor: pointer;
+
+  &:first-of-type {
+    margin-top: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: rgba(255, 255, 255, 0.1) 0 4px 12px;
+  }
+
+  section {
+    flex: 1;
+  }
+
+  footer {
+    color: var(--ion-color-primary);
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}

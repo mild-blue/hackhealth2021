@@ -9,16 +9,17 @@
 
 <ion-content fullscreen="true">
   <main>
+    <h3>Available patients from FIHR</h3>
     <ng-container *ngIf="!loading else spinner">
       <ng-container *ngIf="patients.length">
-        <h3>Available patients</h3>
-        <ion-list>
-          <ion-item *ngFor="let p of patients"
-                    (click)="selectedPatient = p">
-            <ion-label>{{ p.name }}</ion-label>
-            <ion-icon *ngIf="p === selectedPatient" slot="end" name="checkmark"></ion-icon>
-          </ion-item>
-        </ion-list>
+        <div *ngFor="let p of patients"
+             (click)="selectedPatient = p"
+             class="patient">
+          <section><strong>{{ p.name }}</strong></section>
+          <footer *ngIf="p === selectedPatient">
+            <ion-icon slot="end" name="checkmark"></ion-icon>
+          </footer>
+        </div>
       </ng-container>
     </ng-container>
   </main>
