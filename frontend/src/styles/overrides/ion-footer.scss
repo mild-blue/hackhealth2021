@@ -10,6 +10,7 @@ ion-footer {
   ion-button {
     display: block;
     margin: auto;
+    max-width: var(--container-max-width);
     width: calc(100vw - 32px);
   }
 

@@ -5,13 +5,15 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="patients.length else noPatients">
-    <ion-list>
-      <ion-item *ngFor="let p of patients">
-        <ion-label>{{ p.name }}</ion-label>
-      </ion-item>
-    </ion-list>
-  </ng-container>
+  <main>
+    <ng-container *ngIf="patients.length else noPatients">
+      <ion-list>
+        <ion-item *ngFor="let p of patients">
+          <ion-label>{{ p.name }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+  </main>
 </ion-content>
 
 <ion-footer class="ion-no-border fab-button-footer">

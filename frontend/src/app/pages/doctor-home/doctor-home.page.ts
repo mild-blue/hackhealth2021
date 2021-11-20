@@ -15,6 +15,7 @@ export class DoctorHomePage implements OnInit {
   }
 
   ngOnInit() {
+    this.initMyPatients();
   }
 
   async initMyPatients() {

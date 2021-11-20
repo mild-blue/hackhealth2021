@@ -26,7 +26,13 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 // Custom
+:root {
+  --container-max-width: 860px;
+}
+
 @import "styles/hotpink";
+@import "styles/main";
+@import "styles/overrides/ion-list";
 @import "styles/overrides/ion-title";
 @import "styles/overrides/ion-footer";
 @import "styles/overrides/ion-back-button";

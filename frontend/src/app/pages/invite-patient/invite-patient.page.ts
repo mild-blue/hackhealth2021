@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Patient } from '../../model/Patient';
+import { DoctorService } from '../../services/doctor/doctor.service';
 
 @Component({
   selector: 'app-invite-patient',
@@ -7,9 +9,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class InvitePatientPage implements OnInit {
 
-  constructor() { }
+  patients: Patient[] = [];
+  selectedPatient?: Patient;
+
+  constructor(private doctorService: DoctorService) {
+  }
 
   ngOnInit() {
+    this.initAllPatients();
+  }
+
+  async initAllPatients() {
+    try {
+      this.patients = await this.doctorService.getAllPatients();
+    } catch (e) {
+
+    }
   }
 
   invitePatient() {
