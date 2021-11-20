@@ -67,35 +67,53 @@ public class PatientController : ApiController
     [HttpPost("{patientId}/submit")]
     public async Task<IActionResult> AnalyzeVideo(string patientId, IFormFile file)
     {
-        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        var filePath = Path.Combine(folder, "video.mov");
-        using var stream = System.IO.File.OpenWrite(filePath);
-        await file.CopyToAsync(stream);
-
-        // TODO classify data
-
-        if (!await _patientService.AddPatientData(patientId, new PatientData
-        {
-            Bpm = 66m
-        }))
+        if(await _patientService.GetPatientDetail(patientId) is null)
         {
             return NotFound($"Patient with id {patientId} not foound.");
         }
 
+        var fileId = Guid.NewGuid();
+        var extension = Path.GetExtension(file.FileName);
+        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var filePath = Path.Combine(folder, $"{fileId}{extension}");
+        using (var stream = System.IO.File.OpenWrite(filePath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // TODO classify data
+        await _patientService.AddPatientData(patientId, new PatientData
+        {
+            Bpm = 66m
+        });
+
+        // TODO delete tmp image
+
+
         return Ok(new
         {
+            fileId,
             file.FileName,
             file.ContentType,
             file.Length
         });
     }
 
-    [HttpGet("download")]
-    public FileStreamResult Download()
+    [HttpGet("download/{id}")]
+    public IActionResult Download(Guid id)
     {
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        var filePath = Path.Combine(folder, "video.mov");
-        using var stream = System.IO.File.OpenRead(filePath);
-        return base.File(stream, "video/quicktime");
+        var files = Directory.GetFiles(folder);
+        var filePath = files.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == id.ToString());
+
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            var stream = System.IO.File.OpenRead(filePath);
+            return File(stream, "video/quicktime", Path.GetFileName(filePath)); 
+        }
+        else
+        {
+            return NotFound($"File with id {id} not found.");
+        }
     }
 }
