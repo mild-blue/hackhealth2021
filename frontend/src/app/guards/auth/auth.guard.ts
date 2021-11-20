@@ -16,6 +16,10 @@ export class AuthGuard implements CanActivate {
     if (this.patientService.isPatientLoggedIn) {
       // logged in, return true
       return true;
+    } else if (this.doctorService.isDoctorLoggedIn) {
+      // redirect to doctor HP
+      this.router.navigate(['/doctor'], { replaceUrl: true });
+      return false;
     }
 
     // not logged in, redirect to login page

@@ -10,7 +10,7 @@
     <ion-button [routerLink]="'/verify'">
       I am patient
     </ion-button>
-    <ion-button [routerLink]="'/doctor'">
+    <ion-button (click)="handleDoctorLogin()">
       I am doctor
     </ion-button>
   </section>

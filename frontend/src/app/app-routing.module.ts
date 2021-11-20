@@ -2,10 +2,12 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorGuard } from './guards/doctor/doctor.guard';
 import { PatientGuard } from './guards/patient/patient.guard';
+import { AuthGuard } from './guards/auth/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
+    canActivate: [AuthGuard],
     loadChildren: () => import('./pages/patient-home/patient-home.module').then(m => m.PatientHomePageModule)
   },
   {
