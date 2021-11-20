@@ -24,13 +24,9 @@ public class PatientController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public PatientDetailDto GetPatientDetail(string id)
+    public async Task<ActionResult<PatientDetailDto>> GetPatientDetail(string id)
     {
-        return new(id, "John Doe", new()
-        {
-            new(DateTime.Now.AddDays(-1), false),
-            new(DateTime.Now, true),
-        });
+        return OkOrNotFound(await _patientService.GetDetail(id));
     }
 
     /// <summary>

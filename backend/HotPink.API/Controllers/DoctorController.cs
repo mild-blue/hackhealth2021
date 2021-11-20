@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotPink.API.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public abstract class ApiController : ControllerBase { }
-
 public class DoctorController : ApiController
 {
     public record PatientListDto(string Id, string Name);
@@ -53,7 +49,7 @@ public class DoctorController : ApiController
     [HttpPost("invite")]
     public IActionResult Invite([FromBody] CreateInvitationDto invitation)
     {
-        if (_invitationService.Invite(invitation))
+        if (_invitationService.Invite(invitation with { DoctorId = "1011"}))
         {
             return Ok();
         }
