@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { MeasurementDetailPageRoutingModule } from './measurement-detail-routing.module';
 
 import { MeasurementDetailPage } from './measurement-detail.page';
+import { PagesSharedModule } from '../pages-shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MeasurementDetailPageRoutingModule
+    MeasurementDetailPageRoutingModule,
+    PagesSharedModule
   ],
   declarations: [MeasurementDetailPage]
 })

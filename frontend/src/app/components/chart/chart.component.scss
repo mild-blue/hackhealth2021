@@ -1,0 +1,21 @@
+.chart {
+  width: calc(100vw - 32px);
+  height: calc((100vw - 32px) * (306 / 382));
+
+  @media (min-width: 860px) {
+    width: calc(860px - 32px);
+    height: calc((860px - 32px) * (306 / 382));
+  }
+
+  ::ng-deep {
+    canvas {
+      max-width: 100%;
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .canvasjs-chart-credit {
+      display: none;
+    }
+  }
+}
