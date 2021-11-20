@@ -62,28 +62,69 @@ namespace HotPink.API.Services
 
             // BPM - scalar
             observation.Value = new Quantity(data.Bpm, "BPM", SYSTEM);
-            await _fhir.CreateAsync(observation);
 
             // pulse wave 2D array
-            var test = new SampledData
+            observation.Component.Add(new Observation.ComponentComponent()
             {
-
-            };
+                Code = new CodeableConcept(SYSTEM, WAVE + 0),
+                Value = new SampledData
+                {
+                    Data = Serialize1D(data.PulseWave[0]),
+                    Dimensions = 1,
+                    Origin  = new Quantity(0, "HB"),
+                    Period = 0
+                }
+            });
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, WAVE + 1),
+                Value = new SampledData
+                {
+                    Data = Serialize1D(data.PulseWave[1]),
+                    Dimensions = 1,
+                    Origin = new Quantity(0, "HB"),
+                    Period = 0
+                }
+            });
 
             // peaks 2D array
-
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, PEAKS + 0),
+                Value = new SampledData
+                {
+                    Data = Serialize1D(data.Peaks[0]),
+                    Dimensions = 1,
+                    Origin = new Quantity(0, "HB"),
+                    Period = 0
+                }
+            });
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, PEAKS + 1),
+                Value = new SampledData
+                {
+                    Data = Serialize1D(data.Peaks[1]),
+                    Dimensions = 1,
+                    Origin = new Quantity(0, "HB"),
+                    Period = 0
+                }
+            });
 
             // distances 1D array
-            var a = new[] { 10m, 20m, 10m, 20m, 10m };
             observation.Component.Add(new Observation.ComponentComponent()
             {
                 Code = new CodeableConcept(SYSTEM, DISTANCES),
                 Value = new SampledData
                 {
-                    Data = Serialize1D(a)
+                    Data = Serialize1D(data.PeaksDistances),
+                    Dimensions = 1,
+                    Origin = new Quantity(0, "HB"),
+                    Period = 0
                 }
             });
 
+            await _fhir.CreateAsync(observation);
             return true;
         }
 
@@ -132,11 +173,14 @@ namespace HotPink.API.Services
                     .ToList();
 
                 var patientData = observations
-                    .Select(observations =>
+                    .Select(observation =>
                     {
                         var data = new PatientData
                         {
-                            Bpm = (observations.Value as Quantity)?.Value ?? default
+                            Bpm = (observation.Value as Quantity)?.Value ?? default,
+                            Peaks = Deserialize2D(observation.Component, PEAKS),
+                            PeaksDistances = Deserialize1D(observation.Component, DISTANCES),
+                            PulseWave = Deserialize2D(observation.Component, WAVE),
                         };
                         return data;
                     }).ToList();
@@ -167,5 +211,37 @@ namespace HotPink.API.Services
 
         private static decimal[] DeSerialize1D(string data) =>
             data.Split(" ").Select(x => decimal.Parse(x)).ToArray();
+
+        private List<decimal[]> Deserialize2D(IEnumerable<Observation.ComponentComponent> components, string code)
+        {
+            var data = new List<decimal[]>();
+            for (int i = 0; i <= 1; i++)
+            {
+                var component = components.FirstOrDefault(x => x.Code.Coding.Any(y => y.Code == (code + i)));
+                if (component is not null)
+                {
+                    if(component.Value is SampledData raw)
+                    {
+                        data.Add(DeSerialize1D(raw.Data));
+                    }
+                } 
+            }
+
+            return data;
+        }
+
+        private decimal[] Deserialize1D(IEnumerable<Observation.ComponentComponent> components, string code)
+        {
+            var component = components.FirstOrDefault(x => x.Code.Coding.Any(y => y.Code == code));
+            if (component is not null)
+            {
+                if (component.Value is SampledData raw)
+                {
+                    return DeSerialize1D(raw.Data);
+                }
+            }
+
+            return Array.Empty<decimal>();
+        }
     }
 }

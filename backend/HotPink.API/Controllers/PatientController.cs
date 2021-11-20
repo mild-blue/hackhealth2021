@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using System;
 using System.Drawing;
+using System.Text.Json;
 
 namespace HotPink.API.Controllers;
 
@@ -82,13 +83,12 @@ public class PatientController : ApiController
         }
 
         // TODO classify data
-        await _patientService.AddPatientData(patientId, new PatientData
-        {
-            Bpm = 66m
-        });
+        var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification.json"));
+        var data = JsonSerializer.Deserialize<PatientData>(dataJson);
+
+        await _patientService.AddPatientData(patientId, data);
 
         // TODO delete tmp image
-
 
         return Ok(new
         {
