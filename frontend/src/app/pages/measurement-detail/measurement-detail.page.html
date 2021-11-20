@@ -13,7 +13,24 @@
 <ion-content fullscreen="true">
   <ng-container *ngIf="!loading else spinner">
     <ng-container *ngIf="record">
+      <section *ngIf="!isDoctor && doctorName?.length" class="alert">
+        These data are shared with your doctor <strong>{{ doctorName }}</strong>
+      </section>
       <main>
+        <ul>
+          <li *ngIf="isDoctor && patientName">
+            <span>Patient</span>
+            <span>{{ patientName }}</span>
+          </li>
+          <li>
+            <span>Recorded at</span>
+            <span>{{ record.date|date:"dd.MM.YYYY HH:mm"}}</span>
+          </li>
+          <li>
+            <span>BPM</span>
+            <span>{{ record.bpm }}</span>
+          </li>
+        </ul>
         <app-chart [record]="record"></app-chart>
       </main>
     </ng-container>

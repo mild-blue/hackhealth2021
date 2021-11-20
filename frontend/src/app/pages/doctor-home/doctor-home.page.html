@@ -15,7 +15,7 @@
       <ng-container *ngIf="patients.length else noPatients">
         <ion-list>
           <ion-item *ngFor="let p of patients"
-                    [routerLink]="['/patient-detail', p.id]"
+                    [routerLink]="['/patient-detail', p.id, p.name]"
                     [detail]="true">
             <ion-label>{{ p.name }}</ion-label>
           </ion-item>

@@ -6,12 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RecordListComponent } from '../components/record-list/record-list.component';
 import { ChartComponent } from '../components/chart/chart.component';
+import { CardComponent } from '../components/card/card.component';
 
 @NgModule({
   declarations: [
     LoadingComponent,
     RecordListComponent,
-    ChartComponent
+    ChartComponent,
+    CardComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +24,8 @@ import { ChartComponent } from '../components/chart/chart.component';
   exports: [
     LoadingComponent,
     RecordListComponent,
-    ChartComponent
+    ChartComponent,
+    CardComponent
   ]
 })
 export class PagesSharedModule {

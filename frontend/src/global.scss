@@ -28,6 +28,11 @@
 // Custom
 :root {
   --container-max-width: 860px;
+  --border-color: #eee;
+
+  @media (prefers-color-scheme: dark) {
+    --border-color: #3a3a3a;
+  }
 }
 
 @import "styles/hotpink";

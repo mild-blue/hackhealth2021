@@ -20,4 +20,7 @@ export class PlatformService {
   get isAndroid(): boolean {
     return this._platform.is('android');
   }
+  get isIos(): boolean {
+    return this._platform.is('ios');
+  }
 }

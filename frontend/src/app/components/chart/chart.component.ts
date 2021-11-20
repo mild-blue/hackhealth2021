@@ -22,7 +22,7 @@ export class ChartComponent implements OnChanges {
   @Input() record?: RecordDetail;
 
   isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  isIos = !this.platform.isAndroid;
+  isIos = this.platform.isIos;
 
   constructor(private platform: PlatformService) {
   }

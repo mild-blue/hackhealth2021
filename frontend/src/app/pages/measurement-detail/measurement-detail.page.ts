@@ -12,11 +12,15 @@ import { RecordDetail } from '../../model/RecordDetail';
 })
 export class MeasurementDetailPage implements OnInit {
 
+  isDoctor = this.doctorService.isDoctorLoggedIn;
+
   record?: RecordDetail;
-  loading = false
+  loading = false;
 
   id?: string;
-  backText = this.doctorService.isDoctorLoggedIn ? 'Back' : 'My history';
+  backText = this.isDoctor ? 'Back' : 'My history';
+  patientName?: string;
+  doctorName?: string;
 
   constructor(private activatedRoute: ActivatedRoute,
               private toastService: ToastService,
@@ -27,6 +31,11 @@ export class MeasurementDetailPage implements OnInit {
 
   ngOnInit() {
     this.id = this.activatedRoute.snapshot.paramMap.get('recordId') ?? undefined;
+    this.patientName = this.activatedRoute.snapshot.paramMap.get('name') ?? undefined;
+
+    if (!this.isDoctor) {
+      this.doctorName = this.patientService.patientValue?.doctor?.name ?? '';
+    }
 
     if (!this.id) {
       return;
@@ -51,7 +60,7 @@ export class MeasurementDetailPage implements OnInit {
   }
 
   public goBack(): void {
-    if (this.doctorService.isDoctorLoggedIn) {
+    if (this.isDoctor) {
       this.router.navigate(['../'], { relativeTo: this.activatedRoute });
     } else {
       this.router.navigate(['/patient/history'], { replaceUrl: true });
