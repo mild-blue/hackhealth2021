@@ -4,6 +4,7 @@ import { Doctor } from '../../model/Doctor';
 import { Patient } from '../../model/Patient';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class DoctorService {
 
   private doctorSubject: BehaviorSubject<Doctor | undefined> = new BehaviorSubject<Doctor | undefined>(undefined);
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private router: Router) {
     this.setCurrentDoctor();
   }
 
@@ -43,6 +45,12 @@ export class DoctorService {
     const doctor: Doctor = { id: '1011', name: 'Dr. Magdalene960 Parisian75' };
     this.login(doctor);
     return doctor;
+  }
+
+  public logout(): void {
+    this.doctorSubject.next(undefined);
+    localStorage.removeItem('doctor');
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   private setCurrentDoctor(): void {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { PatientService } from '../../services/patient/patient.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
   selector: 'app-verify',
@@ -9,8 +10,11 @@ import { PatientService } from '../../services/patient/patient.service';
 })
 export class VerifyPage implements OnInit {
 
+  code?: string;
+
   constructor(private navController: NavController,
-              private patientService: PatientService) {
+              private patientService: PatientService,
+              private toastService: ToastService) {
   }
 
   ngOnInit() {
@@ -22,11 +26,16 @@ export class VerifyPage implements OnInit {
   }
 
   async verify() {
+    if (!this.code) {
+      return;
+    }
+
     try {
-      await this.patientService.acceptInvitation('');
+      await this.patientService.acceptInvitation(this.code);
+      this.toastService.success('Code successfully verified');
       this.navController.navigateRoot(['/patient']);
     } catch (e) {
-      console.log(e);
+      this.toastService.error(e.message);
     }
   }
 

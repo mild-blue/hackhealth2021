@@ -25,4 +25,8 @@ export class DoctorHomePage implements OnInit {
 
     }
   }
+
+  logout() {
+    this.doctorService.logout();
+  }
 }

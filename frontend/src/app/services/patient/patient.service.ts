@@ -4,6 +4,7 @@ import { Patient } from '../../model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class PatientService {
 
   private patientSubject: BehaviorSubject<Patient | undefined> = new BehaviorSubject<Patient | undefined>(undefined);
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private router: Router) {
     this.setCurrentPatient();
   }
 
@@ -20,6 +22,12 @@ export class PatientService {
     const patient: Patient = { id: '1' };
     this.login(patient);
     return patient;
+  }
+
+  public logout(): void {
+    this.patientSubject.next(undefined);
+    localStorage.removeItem('patient');
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   public async acceptInvitation(invitationCode: string): Promise<Patient> {
