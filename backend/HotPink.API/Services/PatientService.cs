@@ -41,22 +41,39 @@ namespace HotPink.API.Services
             }
         }
 
-        public async Task AddSessionData(Guid sessionId, double bpm)
+        public async Task<bool> AddPatientData(string patientId, double bpm)
         {
-            if (_sessions.TryGetValue(sessionId, out var patientId))
+            var patient = await GetPatientDetail(patientId);
+            if(patient is null) return false;
+            
+            var observation = new Observation
             {
-                // BPM
-                var observation = new Observation
-                {
-                    Status = ObservationStatus.Final,
-                    Subject = new ResourceReference($"Patient/{patientId}"),
-                    Code = new CodeableConcept(SYSTEM, CODE)
-                };
+                Status = ObservationStatus.Final,
+                Subject = new ResourceReference($"Patient/{patientId}"),
+                Code = new CodeableConcept(SYSTEM, CODE)
+            };
 
-                observation.Category.Add(new CodeableConcept(SYSTEM, CODE));
-                observation.Value = new Quantity((decimal)bpm, "BPM", SYSTEM);
-                await _fhir.CreateAsync(observation);
-            }
+            observation.Category.Add(new CodeableConcept(SYSTEM, CODE));
+
+            // BPM - scalar
+            observation.Value = new Quantity((decimal)bpm, "BPM", SYSTEM);
+            await _fhir.CreateAsync(observation);
+
+            // sinusoida
+            // array x,y
+
+            var test = new SampledData
+            {
+
+            };
+
+            // array časů kde jsou peaky
+            // array x
+
+            // vzdálenost mezi peaky
+            // array x
+
+            return true;
         }
 
         public async Task AddToDoctor(string doctorId, string patientId)
@@ -97,11 +114,14 @@ namespace HotPink.API.Services
             try
             {
                 var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
-                var data = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}" }))
+                var data = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}", $"code={CODE}" }))
                     .Entry
                     .Select(x => x.Resource)
                     .OfType<Observation>()
                     .ToList();
+
+
+
                 return patient.ToDetailDto();
             }
             catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
@@ -122,5 +142,11 @@ namespace HotPink.API.Services
                 return null;
             }
         }
+
+        private static string Serialize1D(decimal[] data) =>
+            string.Join(" ", data);
+
+        private static decimal[] DeSerialize1D(string data) =>
+            data.Split(" ").Select(x => decimal.Parse(x)).ToArray();
     }
 }

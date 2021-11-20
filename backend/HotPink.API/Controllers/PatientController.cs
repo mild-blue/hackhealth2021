@@ -11,7 +11,7 @@ public class PatientController : ApiController
     public record PatientDetailDto(string Id, string Name, List<PatientDataDto> Data);
     public record AcceptInvitationDto(string InvitationCode);
     public record PatientDataDto(DateTime DateTime, bool IsOk);
-    public record InvitationAcceptedDto(Guid SessionId, PractitionerDetailDto Doctor);
+    public record InvitationAcceptedDto(string PatientId, PractitionerDetailDto Doctor);
     public record PractitionerDetailDto(string Id, string Name);
 
     private readonly InvitationService _invitationService;
@@ -48,7 +48,7 @@ public class PatientController : ApiController
             await _patientService.EstablishSession(sessionId, result.PatientId);
             await _patientService.AddToDoctor(result.DoctorId, result.PatientId);
             var doctor = await _patientService.GetDoctorDetail(result.DoctorId);
-            return Ok(new InvitationAcceptedDto(sessionId, doctor!));
+            return Ok(new InvitationAcceptedDto(result.PatientId, doctor!));
         }
         else
         {
@@ -59,17 +59,20 @@ public class PatientController : ApiController
     /// <summary>
     /// Submit patient video.
     /// </summary>
-    /// <param name="sessionId"></param>
+    /// <param name="patientId"></param>
     /// <param name="file"></param>
-    [HttpPost("{sessionId}/submit")]
-    public async Task<IActionResult> AnalyzeVideo(Guid sessionId, IFormFile file)
+    [HttpPost("{patientId}/submit")]
+    public async Task<IActionResult> AnalyzeVideo(string patientId, IFormFile file)
     {
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var filePath = Path.Combine(folder, "video.mov");
         using var stream = System.IO.File.OpenWrite(filePath);
         await file.CopyToAsync(stream);
 
-        await _patientService.AddSessionData(sessionId, 66);
+        if(!await _patientService.AddPatientData(patientId, 66))
+        {
+            return NotFound($"Patient with id {patientId} not foound.");
+        }
 
         return Ok(new
         {
