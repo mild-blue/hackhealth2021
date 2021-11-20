@@ -48,7 +48,7 @@ namespace HotPink.API.Services
 
         public async Task<bool> AddPatientData(string patientId, PatientData data)
         {
-            if(!await PatientExists(patientId))
+            if (!await PatientExists(patientId))
             {
                 return false;
             }
@@ -74,7 +74,7 @@ namespace HotPink.API.Services
                 {
                     Data = Serialize1D(data.PulseWave[0]),
                     Dimensions = 1,
-                    Origin  = new Quantity(0, "HB"),
+                    Origin = new Quantity(0, "HB"),
                     Period = 0
                 }
             });
@@ -128,6 +128,8 @@ namespace HotPink.API.Services
             });
 
             await _fhir.CreateAsync(observation);
+            var observations = await GetPatientObservations(patientId);
+            data.Id = observations.Max(x => x.Id);
             return true;
         }
 
@@ -182,26 +184,8 @@ namespace HotPink.API.Services
             try
             {
                 var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
-                var observations = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}", $"code={CODE}" }))
-                    .Entry
-                    .Select(x => x.Resource)
-                    .OfType<Observation>()
-                    .ToList();
-
-                var patientData = observations
-                    .Select(observation =>
-                    {
-                        var data = new PatientData
-                        {
-                            Created = observation.Issued?.UtcDateTime,
-                            Bpm = (observation.Value as Quantity)?.Value ?? default,
-                            Peaks = Deserialize2D(observation.Component, PEAKS),
-                            PeaksDistances = Deserialize1D(observation.Component, DISTANCES),
-                            PulseWave = Deserialize2D(observation.Component, WAVE),
-                        };
-                        return data;
-                    }).ToList();
-
+                var observations = await GetPatientObservations(patientId);
+                var patientData = observations.Select(ToListPatientData).ToList();
                 return patient.ToDetailDto(patientData);
             }
             catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
@@ -223,13 +207,50 @@ namespace HotPink.API.Services
             }
         }
 
+        public async Task<PatientData?> GetData(string id)
+        {
+            try
+            {
+                var observation = await _fhir.ReadAsync<Observation>($"Observation/{id}");
+                return ToPatientData(observation);
+            }
+            catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+        }
+
+        private async Task<List<Observation>> GetPatientObservations(string patientId)
+        {
+            var observations = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}", $"code={CODE}" }))
+                    .Entry
+                    .Select(x => x.Resource)
+                    .OfType<Observation>()
+                    .ToList();
+            return observations;
+        }
+
+        private static PatientDataListDto ToListPatientData(Observation observation) =>
+            new(observation.Id, observation.Issued?.UtcDateTime ?? DateTime.UtcNow, (observation.Value as Quantity)?.Value ?? default);
+
+        private static PatientData ToPatientData(Observation observation) =>
+            new()
+            {
+                Id = observation.Id,
+                Created = observation.Issued?.UtcDateTime ?? DateTime.UtcNow,
+                Bpm = (observation.Value as Quantity)?.Value ?? default,
+                Peaks = Deserialize2D(observation.Component, PEAKS),
+                PeaksDistances = Deserialize1D(observation.Component, DISTANCES),
+                PulseWave = Deserialize2D(observation.Component, WAVE),
+            };
+
         private static string Serialize1D(decimal[] data) =>
             string.Join(" ", data);
 
         private static decimal[] DeSerialize1D(string data) =>
             data.Split(" ").Select(x => decimal.Parse(x)).ToArray();
 
-        private List<decimal[]> Deserialize2D(IEnumerable<Observation.ComponentComponent> components, string code)
+        private static List<decimal[]> Deserialize2D(IEnumerable<Observation.ComponentComponent> components, string code)
         {
             var data = new List<decimal[]>();
             for (int i = 0; i <= 1; i++)
@@ -237,17 +258,17 @@ namespace HotPink.API.Services
                 var component = components.FirstOrDefault(x => x.Code.Coding.Any(y => y.Code == (code + i)));
                 if (component is not null)
                 {
-                    if(component.Value is SampledData raw)
+                    if (component.Value is SampledData raw)
                     {
                         data.Add(DeSerialize1D(raw.Data));
                     }
-                } 
+                }
             }
 
             return data;
         }
 
-        private decimal[] Deserialize1D(IEnumerable<Observation.ComponentComponent> components, string code)
+        private static decimal[] Deserialize1D(IEnumerable<Observation.ComponentComponent> components, string code)
         {
             var component = components.FirstOrDefault(x => x.Code.Coding.Any(y => y.Code == code));
             if (component is not null)

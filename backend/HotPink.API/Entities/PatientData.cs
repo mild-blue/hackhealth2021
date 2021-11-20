@@ -4,7 +4,9 @@ namespace HotPink.API.Entities
 {
     public class PatientData
     {
-        public DateTime? Created { get; set; } = DateTime.UtcNow;
+        public string? Id { get; set; }
+
+        public DateTime Created { get; set; } = DateTime.UtcNow;
 
         [JsonPropertyName("bpm")]
         public decimal Bpm { get; set; }

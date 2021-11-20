@@ -3,19 +3,17 @@ using HotPink.API.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
-using System;
-using System.Drawing;
 using System.Text.Json;
 
 namespace HotPink.API.Controllers;
 
 public class PatientController : ApiController
 {
-    public record PatientDetailDto(string Id, string Name, List<PatientData> Data);
+    public record PatientDetailDto(string Id, string Name, List<PatientDataListDto> Data);
     public record AcceptInvitationDto(string InvitationCode);
     public record InvitationAcceptedDto(string Id, PractitionerDetailDto Doctor);
     public record PractitionerDetailDto(string Id, string Name);
-
+    public record PatientDataListDto(string Id, DateTime Created, decimal Bpm);
 
 
     private readonly InvitationService _invitationService;
@@ -66,7 +64,7 @@ public class PatientController : ApiController
     /// <param name="patientId"></param>
     /// <param name="file"></param>
     [HttpPost("{patientId}/submit")]
-    public async Task<IActionResult> AnalyzeVideo(string patientId, IFormFile file)
+    public async Task<ActionResult<PatientData>> AnalyzeVideo(string patientId, IFormFile file)
     {
         if (!await _patientService.PatientExists(patientId))
         {
@@ -83,20 +81,15 @@ public class PatientController : ApiController
         }
 
         // TODO classify data
+        
         var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification2.json"));
-        var data = JsonSerializer.Deserialize<PatientData>(dataJson);
+        var data = JsonSerializer.Deserialize<PatientData>(dataJson) ?? new();
 
         await _patientService.AddPatientData(patientId, data);
 
         // TODO delete tmp image
 
-        return Ok(new
-        {
-            fileId,
-            file.FileName,
-            file.ContentType,
-            file.Length
-        });
+        return Ok(data);
     }
 
     [HttpGet("download/{id}")]
@@ -116,4 +109,13 @@ public class PatientController : ApiController
             return NotFound($"File with id {id} not found.");
         }
     }
+
+    /// <summary>
+    /// Get patient's data.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("data/{id}")]
+    public async Task<ActionResult<PatientData>> AnalyzeVideo(string id) =>
+        OkOrNotFound(await _patientService.GetData(id));
 }
