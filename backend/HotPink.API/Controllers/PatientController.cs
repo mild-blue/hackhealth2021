@@ -1,14 +1,22 @@
-﻿using HotPink.API.Services;
+﻿using HotPink.API.Entities;
+using HotPink.API.Services;
 
 using Microsoft.AspNetCore.Mvc;
+
+using System;
+using System.Drawing;
+using System.Text.Json;
 
 namespace HotPink.API.Controllers;
 
 public class PatientController : ApiController
 {
-    public record PatientDetailDto(string Id, string Name, List<PatientDataDto> Data);
+    public record PatientDetailDto(string Id, string Name, List<PatientData> Data);
     public record AcceptInvitationDto(string InvitationCode);
-    public record PatientDataDto(DateTime DateTime, bool IsOk);
+    public record InvitationAcceptedDto(string Id, PractitionerDetailDto Doctor);
+    public record PractitionerDetailDto(string Id, string Name);
+
+
 
     private readonly InvitationService _invitationService;
     private readonly PatientService _patientService;
@@ -26,7 +34,7 @@ public class PatientController : ApiController
     [HttpGet("{id}")]
     public async Task<ActionResult<PatientDetailDto>> GetPatientDetail(string id)
     {
-        return OkOrNotFound(await _patientService.GetDetail(id));
+        return OkOrNotFound(await _patientService.GetPatientDetail(id));
     }
 
     /// <summary>
@@ -35,15 +43,16 @@ public class PatientController : ApiController
     /// <param name="invitation"></param>
     /// <returns></returns>
     [HttpPost("accept")]
-    public async Task<ActionResult<Guid>> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
+    public async Task<ActionResult<InvitationAcceptedDto>> AcceptInvitation([FromBody] AcceptInvitationDto invitation)
     {
         var result = _invitationService.Accept(invitation);
         if (result is not null)
         {
             var sessionId = Guid.NewGuid();
-            _patientService.EstablishSession(sessionId, result.PatientId);
+            await _patientService.EstablishSession(sessionId, result.PatientId);
             await _patientService.AddToDoctor(result.DoctorId, result.PatientId);
-            return sessionId;
+            var doctor = await _patientService.GetDoctorDetail(result.DoctorId);
+            return Ok(new InvitationAcceptedDto(result.PatientId, doctor!));
         }
         else
         {
@@ -54,16 +63,57 @@ public class PatientController : ApiController
     /// <summary>
     /// Submit patient video.
     /// </summary>
-    /// <param name="sessionId"></param>
+    /// <param name="patientId"></param>
     /// <param name="file"></param>
-    [HttpPost("{sessionId}/submit")]
-    public IActionResult AnalyzeVideo(Guid sessionId, IFormFile file)
+    [HttpPost("{patientId}/submit")]
+    public async Task<IActionResult> AnalyzeVideo(string patientId, IFormFile file)
     {
+        if(await _patientService.GetPatientDetail(patientId) is null)
+        {
+            return NotFound($"Patient with id {patientId} not foound.");
+        }
+
+        var fileId = Guid.NewGuid();
+        var extension = Path.GetExtension(file.FileName);
+        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var filePath = Path.Combine(folder, $"{fileId}{extension}");
+        using (var stream = System.IO.File.OpenWrite(filePath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // TODO classify data
+        var dataJson = await System.IO.File.ReadAllTextAsync(Path.Combine("Data", "classification2.json"));
+        var data = JsonSerializer.Deserialize<PatientData>(dataJson);
+
+        await _patientService.AddPatientData(patientId, data);
+
+        // TODO delete tmp image
+
         return Ok(new
         {
+            fileId,
             file.FileName,
             file.ContentType,
             file.Length
         });
+    }
+
+    [HttpGet("download/{id}")]
+    public IActionResult Download(Guid id)
+    {
+        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var files = Directory.GetFiles(folder);
+        var filePath = files.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == id.ToString());
+
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            var stream = System.IO.File.OpenRead(filePath);
+            return File(stream, "video/quicktime", Path.GetFileName(filePath)); 
+        }
+        else
+        {
+            return NotFound($"File with id {id} not found.");
+        }
     }
 }

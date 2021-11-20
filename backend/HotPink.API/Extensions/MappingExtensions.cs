@@ -1,5 +1,7 @@
 ﻿using Hl7.Fhir.Model;
 
+using HotPink.API.Entities;
+
 using static Hl7.Fhir.Model.HumanName;
 using static HotPink.API.Controllers.DoctorController;
 using static HotPink.API.Controllers.PatientController;
@@ -16,12 +18,20 @@ namespace HotPink.API.Extensions
             return new(patient.Id, name?.ToString() ?? string.Empty);
         }
 
-        public static PatientDetailDto ToDetailDto(this Patient patient)
+        public static PatientDetailDto ToDetailDto(this Patient patient, List<PatientData> patientData)
         {
             var name = patient.Name.FirstOrDefault(x => x.Use == NameUse.Official)
                 ?? patient.Name.FirstOrDefault();
 
-            return new(patient.Id, name?.ToString() ?? string.Empty, new ());
+            return new(patient.Id, name?.ToString() ?? string.Empty, patientData);
+        }
+
+        public static PractitionerDetailDto ToDetailDto(this Practitioner practitioner)
+        {
+            var name = practitioner.Name.FirstOrDefault(x => x.Use == NameUse.Official)
+                ?? practitioner.Name.FirstOrDefault();
+
+            return new(practitioner.Id, string.Join(" ", name?.Prefix ?? Array.Empty<string>()) + " " + (name?.ToString() ?? string.Empty));
         }
     }
 }
