@@ -16,10 +16,7 @@ namespace HotPink.API.Services
 {
     public class PatientService
     {
-        private readonly ConcurrentDictionary<string, Patient> _patients = new();
-        private readonly ConcurrentDictionary<Guid, Patient> _sessions = new();
-        private readonly ConcurrentDictionary<string, ConcurrentBag<Patient>> _doctorPatients = new();
-
+        private readonly ConcurrentDictionary<Guid, string> _sessions = new();
         private readonly FhirClient _fhir;
 
         public PatientService(FhirClient fhir)
@@ -27,16 +24,26 @@ namespace HotPink.API.Services
             _fhir = fhir;
         }
 
-        public bool EstablishSession(Guid sessionId, string patientId)
+        public async Task<bool> EstablishSession(Guid sessionId, string patientId)
         {
-            if (_patients.TryGetValue(patientId, out var patient))
+            try
             {
-                _sessions[sessionId] = patient;
+                var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+                _sessions[sessionId] = patientId;
                 return true;
             }
-            else
+            catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)
             {
                 return false;
+            }
+        }
+
+        public async Task AddSessionData(Guid sessionId)
+        {
+            if (_sessions.TryGetValue(sessionId, out var patientId))
+            {
+                var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+
             }
         }
 
@@ -78,6 +85,11 @@ namespace HotPink.API.Services
             try
             {
                 var patient = await _fhir.ReadAsync<Patient>($"Patient/{patientId}");
+                var data = (await _fhir.SearchAsync<Observation>(new string[] { $"patient={patientId}" }))
+                    .Entry
+                    .Select(x => x.Resource)
+                    .OfType<Observation>()
+                    .ToList();
                 return patient.ToDetailDto();
             }
             catch (FhirOperationException ex) when (ex.Status == HttpStatusCode.NotFound)

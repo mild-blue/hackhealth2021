@@ -2,6 +2,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 
+using System;
+
 namespace HotPink.API.Controllers;
 
 public class PatientController : ApiController
@@ -41,7 +43,7 @@ public class PatientController : ApiController
         if (result is not null)
         {
             var sessionId = Guid.NewGuid();
-            _patientService.EstablishSession(sessionId, result.PatientId);
+            await _patientService.EstablishSession(sessionId, result.PatientId);
             await _patientService.AddToDoctor(result.DoctorId, result.PatientId);
             return sessionId;
         }
@@ -57,13 +59,27 @@ public class PatientController : ApiController
     /// <param name="sessionId"></param>
     /// <param name="file"></param>
     [HttpPost("{sessionId}/submit")]
-    public IActionResult AnalyzeVideo(Guid sessionId, IFormFile file)
+    public async Task<IActionResult> AnalyzeVideo(Guid sessionId, IFormFile file)
     {
+        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var filePath = Path.Combine(folder, "video.mov");
+        using var stream = System.IO.File.OpenWrite(filePath);
+        await file.CopyToAsync(stream);        
+
         return Ok(new
         {
             file.FileName,
             file.ContentType,
             file.Length
         });
+    }
+
+    [HttpGet("download")]
+    public FileStreamResult Download()
+    {
+        var folder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var filePath = Path.Combine(folder, "video.mov");
+        using var stream = System.IO.File.OpenRead(filePath);
+        return base.File(stream, "video/quicktime");
     }
 }
