@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../services/toast/toast.service';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
@@ -27,8 +27,7 @@ export class MeasurementDetailPage implements OnInit {
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
-              private navController: NavController,
-              private router: Router) {
+              private navController: NavController) {
   }
 
   ngOnInit() {

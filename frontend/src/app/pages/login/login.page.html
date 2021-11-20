@@ -1,17 +1,21 @@
-<ion-header  translucent="true" class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-header translucent="true" class="ion-no-border"></ion-header>
 
 <ion-content fullscreen="true">
-
-  <section>
-    <ion-button [routerLink]="'/verify'">
-      I am patient
-    </ion-button>
-    <ion-button (click)="handleDoctorLogin()">
-      I am doctor
-    </ion-button>
-  </section>
+  <main>
+    <div class="logo">
+      <ion-icon name="pulse-outline"></ion-icon>
+      <h1>Heart Rate Detector</h1>
+      <p>through smartphone camera</p>
+    </div>
+    <div class="buttons">
+      <ion-button [routerLink]="'/verify'">
+        <ion-icon name="man-outline" slot="start"></ion-icon>
+        Continue as a <strong>patient</strong>
+      </ion-button>
+      <ion-button (click)="handleDoctorLogin()">
+        <ion-icon name="medical-outline" slot="start"></ion-icon>
+        Continue as a <strong>doctor</strong>
+      </ion-button>
+    </div>
+  </main>
 </ion-content>
