@@ -7,13 +7,15 @@ import { RouterModule } from '@angular/router';
 import { RecordListComponent } from '../components/record-list/record-list.component';
 import { ChartComponent } from '../components/chart/chart.component';
 import { CardComponent } from '../components/card/card.component';
+import { RecordItemComponent } from '../components/record-item/record-item.component';
 
 @NgModule({
   declarations: [
     LoadingComponent,
     RecordListComponent,
     ChartComponent,
-    CardComponent
+    CardComponent,
+    RecordItemComponent
   ],
   imports: [
     CommonModule,

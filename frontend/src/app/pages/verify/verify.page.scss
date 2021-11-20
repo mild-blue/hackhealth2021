@@ -6,9 +6,13 @@ ion-input {
 section {
   padding-bottom: 30px;
 
-  &:first-child {
-    flex: 1;
-  }
+  //&:first-child {
+  //  flex: 1;
+  //}
+}
+
+main {
+  justify-content: center;
 }
 
 section + section {

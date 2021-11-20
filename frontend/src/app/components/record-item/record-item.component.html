@@ -1,0 +1,17 @@
+<div *ngIf="record"
+     class="record"
+     [routerLink]="[record.id]">
+  <section>
+    <div class="time">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>{{ record.date | date:"dd.MM.YYYY HH:mm" }}</span>
+    </div>
+    <div class="bpm">
+      <ion-icon name="heart-outline" slot="end"></ion-icon>
+      <span>{{ record.bpm }} bpm</span>
+    </div>
+  </section>
+  <footer>
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </footer>
+</div>
