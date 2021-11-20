@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { PatientHomePage } from './patient-home.page';
+import { PatientGuard } from '../../guards/patient/patient.guard';
 
 const routes: Routes = [
   {
     path: 'patient',
     component: PatientHomePage,
+    canActivate: [PatientGuard],
     children: [
       {
         path: 'measure',
@@ -32,6 +34,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class PatientHomePageRoutingModule {}
+export class PatientHomePageRoutingModule {
+}
