@@ -13,7 +13,7 @@ export class ApiService {
 
   constructor(private http: HttpClient,
               private patientService: PatientService) {
-    this.patientService.patient$.subscribe(patient => this.patientId = patient.id);
+    this.patientService.patient$.subscribe(patient => this.patientId = patient?.id);
   }
 
   public async uploadVideo(blob: Blob): Promise<string> {

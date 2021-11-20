@@ -49,11 +49,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/invite-patient-success/invite-patient-success.module').then(m => m.InvitePatientSuccessPageModule)
   },
   {
-    path: 'measurement-detail/:id',
-    canActivate: [AuthGuard],
-    loadChildren: () => import('./pages/measurement-detail/measurement-detail.module').then(m => m.MeasurementDetailPageModule)
-  },
-  {
     path: 'patient-detail/:id',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/patient-detail/patient-detail.module').then(m => m.PatientDetailPageModule)

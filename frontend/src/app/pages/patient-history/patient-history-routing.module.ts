@@ -7,11 +7,16 @@ const routes: Routes = [
   {
     path: '',
     component: PatientHistoryPage
+  },
+  {
+    path: ':recordId',
+    loadChildren: () => import('../measurement-detail/measurement-detail.module').then(m => m.MeasurementDetailPageModule)
   }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class PatientHistoryPageRoutingModule {}
+export class PatientHistoryPageRoutingModule {
+}

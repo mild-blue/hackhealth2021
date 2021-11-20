@@ -37,6 +37,7 @@ export class PatientService {
     ).pipe(
       map(data => {
         data.data = [...data.data.map(record => {
+          record.id = '123'; // todo
           record.date = new Date(record.created);
           return record;
         })];

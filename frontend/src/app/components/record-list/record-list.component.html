@@ -1,6 +1,8 @@
 <div *ngIf="records.length else noRecords" class="records">
   <ion-list>
-    <ion-item *ngFor="let r of records" [detail]="true">
+    <ion-item *ngFor="let r of records"
+              [routerLink]="[r.id]"
+              [detail]="true">
       {{ r.date | date:"dd.MM.YYYY HH:ss" }}
     </ion-item>
   </ion-list>
