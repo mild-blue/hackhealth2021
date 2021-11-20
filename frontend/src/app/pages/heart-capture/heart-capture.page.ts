@@ -90,6 +90,7 @@ export class HeartCapturePage implements OnInit {
       console.log('==== RECORDED FILE', file);
       const video = file as unknown as VideoCapture;
       console.log('==== RECORDED VIDEO', video);
+      console.log('==== VIDEO localURL', video.localURL, '==== VIDEO FULL PATH', video.fullPath);
       return video;
     } catch (e) {
       console.log('==== ERROR WHILE RECORDING VIDEO', e);
@@ -97,8 +98,7 @@ export class HeartCapturePage implements OnInit {
   }
 
   async getBlob(video: VideoCapture) {
-    const prefix = this.platformService.isAndroid ? 'content://' : '';
-    const contents = await Filesystem.readFile({ path: prefix + video.localURL });
+    const contents = await Filesystem.readFile({ path: video.localURL });
     return this.b64toBlob(contents.data, video.type ?? 'video/quicktime');
   }
 

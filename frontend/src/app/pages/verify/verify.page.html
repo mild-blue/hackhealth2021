@@ -11,7 +11,7 @@
   <main>
     <h1>Insert an invitation code from your doctor</h1>
 
-    <ion-input [(ngModel)]="code"></ion-input>
+    <ion-input [(ngModel)]="code" autofocus="autofocus" inputmode="decimal" type="number"></ion-input>
 
     <div class="buttons">
       <ion-button (click)="verify()"
