@@ -4,6 +4,7 @@ import { ToastService } from '../../services/toast/toast.service';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
 import { RecordDetail } from '../../model/RecordDetail';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -26,6 +27,7 @@ export class MeasurementDetailPage implements OnInit {
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
+              private navController: NavController,
               private router: Router) {
   }
 
@@ -61,9 +63,14 @@ export class MeasurementDetailPage implements OnInit {
 
   public goBack(): void {
     if (this.isDoctor) {
-      this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+      const patientId = this.activatedRoute.snapshot.paramMap.get('id');
+      if (patientId && this.patientName) {
+        this.navController.navigateBack(`/patient-detail/${patientId}/${this.patientName}`);
+      } else {
+        this.navController.navigateBack(`/patient-detail`);
+      }
     } else {
-      this.router.navigate(['/patient/history'], { replaceUrl: true });
+      this.navController.navigateBack('/patient/history');
     }
   }
 }

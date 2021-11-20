@@ -15,11 +15,18 @@
     <ng-container *ngIf="!loading && !isWaiting">
       <ng-container *ngIf="recordId else error">
         <h2>Analysis is done</h2>
-        <ion-button [routerLink]="['/measurement-detail', recordId]"
+        <ion-button [routerLink]="['/patient-history', recordId]"
                     color="primary"
                     type="submit"
                     expand="block">
           See analysis result
+        </ion-button>
+        <ion-button [routerLink]="['/']"
+                    color="primary"
+                    fill="outline"
+                    type="submit"
+                    expand="block">
+          Return to homepage
         </ion-button>
       </ng-container>
     </ng-container>

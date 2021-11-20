@@ -13,10 +13,10 @@
 <ion-content fullscreen="true">
   <ng-container *ngIf="!loading else spinner">
     <ng-container *ngIf="record">
-      <section *ngIf="!isDoctor && doctorName?.length" class="alert">
-        These data are shared with your doctor <strong>{{ doctorName }}</strong>
-      </section>
       <main>
+        <section *ngIf="!isDoctor && doctorName?.length" class="alert">
+          These data are shared with your doctor <strong>{{ doctorName }}</strong>
+        </section>
         <ul>
           <li *ngIf="isDoctor && patientName">
             <span>Patient</span>
