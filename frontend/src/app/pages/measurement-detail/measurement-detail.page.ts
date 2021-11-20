@@ -5,6 +5,9 @@ import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
 import { RecordDetail } from '../../model/RecordDetail';
 import { NavController } from '@ionic/angular';
+import { File as FilePlugin } from '@ionic-native/file/ngx';
+import { HttpClient } from '@angular/common/http';
+import { Filesystem } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -27,7 +30,9 @@ export class MeasurementDetailPage implements OnInit {
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
-              private navController: NavController) {
+              private navController: NavController,
+              private file: FilePlugin,
+              private http: HttpClient) {
   }
 
   ngOnInit() {
@@ -81,7 +86,33 @@ export class MeasurementDetailPage implements OnInit {
 
   }
 
-  downloadCSVPulseWave() {
+  async downloadCSVPulseWave() {
+    // try {
+    //   const binary = await this.http.get(
+    //     `${environment.apiUrl}/Patient/data/${this.id}/csv/pulse_wave`
+    //   ).pipe().toPromise();
+    // } catch (e) {
+    //   console.log(e);
+    // }
+    //
+    //
+    // // await binary.text().then(text => console.log(text)).catch(e => console.log(e));
+    let permissions;
+    try {
+      permissions = await Filesystem.requestPermissions();
+    } catch (e) {
+      console.log(e);
+    }
 
+    console.log(permissions);
+    if (permissions.publicStorage !== 'denied') {
+      try {
+        const contents = await Filesystem.writeFile({ path: this.file.dataDirectory + 'myDir', data: 'hellow rold' });
+        console.log(contents);
+      } catch (e) {
+        console.log(e);
+      }
+
+    }
   }
 }

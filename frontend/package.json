@@ -31,6 +31,7 @@
     "@capacitor/splash-screen": "^1.1.6",
     "@capacitor/status-bar": "1.0.6",
     "@ionic-native/core": "^5.36.0",
+    "@ionic-native/file": "^5.36.0",
     "@ionic-native/flashlight": "^5.36.0",
     "@ionic-native/media-capture": "^5.36.0",
     "@ionic/angular": "^5.5.2",

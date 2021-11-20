@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptor } from './interceptors/error/error.interceptor';
+import { File } from '@ionic-native/file/ngx';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ErrorInterceptor } from './interceptors/error/error.interceptor';
   ],
   providers: [
     MediaCapture,
+    File,
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]
