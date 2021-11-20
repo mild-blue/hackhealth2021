@@ -29,3 +29,13 @@ ul {
   border-radius: 6px;
   margin-bottom: 30px;
 }
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 60px;
+
+  ion-button + ion-button {
+    margin-top: 10px;
+  }
+}

@@ -32,8 +32,8 @@ export class ChartComponent implements OnChanges {
     if (changes.record && this.record) {
       const dataPoints = this.transformChartData(this.record);
       const distPoints = this.getPeaksDistancesChartData(this.record);
-      this.initChart('heartRateChart', dataPoints);
-      this.initChart('peakDistancesChart', distPoints);
+      this.initPulseWaveChart('heartRateChart', dataPoints);
+      this.initDistancesChart('peakDistancesChart', distPoints);
     }
   }
 
@@ -74,7 +74,49 @@ export class ChartComponent implements OnChanges {
     return dataPoints;
   }
 
-  initChart(containerId: string, dataPoints: DataPoint[]) {
+  initPulseWaveChart(containerId: string, dataPoints: DataPoint[]) {
+    const chart = new CanvasJS.Chart(containerId, {
+      backgroundColor: this.isDarkMode ? this.isIos ? '#000000' : '#121212' : '#ffffff',
+      theme: this.isDarkMode ? 'dark1' : 'light2', // "light1", "light2", "dark1", "dark2"
+      animationEnabled: true,
+      zoomEnabled: true,
+      toolTip: {
+        enabled: false
+      },
+      axisX: {
+        title: 'Seconds (s)',
+        titleFontSize: 12,
+        interval: 5,
+        intervalType: 'number',
+        minimum: 0,
+        maximum: 60,
+        labelFontSize: 10,
+        gridThickness: 0,
+        lineThickness: 0.25 / 2,
+        tickThickness: 0.25
+      },
+      axisY: {
+        title: 'Amplitude (au)',
+        titleFontSize: 10,
+        labelFontSize: 12,
+        labelFormatter: () => '',
+        gridThickness: 0.25,
+        lineThickness: 0.25,
+        tickThickness: 0.25
+      },
+      data: [
+        {
+          type: 'line',
+          markerSize: 4,
+          dataPoints
+        }
+      ]
+    });
+
+    chart.render();
+  }
+
+  initDistancesChart(containerId: string, dataPoints: DataPoint[]) {
     const chart = new CanvasJS.Chart(containerId, {
       backgroundColor: this.isDarkMode ? this.isIos ? '#000000' : '#121212' : '#ffffff',
       theme: this.isDarkMode ? 'dark1' : 'light2', // "light1", "light2", "dark1", "dark2"

@@ -1,19 +1,17 @@
 <section>
-<h3>Recorded heart rate</h3>
-<div id="heartRateChart" class="chart"></div>
-<footer>
-  <span>0s</span>
-  <span>Select area to zoom</span>
-  <span>60s</span>
-</footer>
+  <h3>Heart rhythm</h3>
+  <footer>
+    <span>Select area to zoom</span>
+  </footer>
+  <div id="heartRateChart" class="chart"></div>
 </section>
 
 <section>
-<h3>Distances between peaks</h3>
-<div id="peakDistancesChart" class="chart"></div>
-<footer>
-  <span>peak 1</span>
-  <span>Select area to zoom</span>
-  <span *ngIf="record">peak {{ record.peaks_distances.length }}</span>
-</footer>
+  <h3>RR tachogram</h3>
+  <div id="peakDistancesChart" class="chart"></div>
+  <footer>
+    <span>peak 1</span>
+    <span>Select area to zoom</span>
+    <span *ngIf="record">peak {{ record.peaks_distances.length }}</span>
+  </footer>
 </section>

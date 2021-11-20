@@ -23,15 +23,37 @@
             <span>{{ patientName }}</span>
           </li>
           <li>
-            <span>Recorded at</span>
+            <span>Date</span>
             <span>{{ record.date|date:"dd.MM.YYYY HH:mm"}}</span>
           </li>
           <li>
-            <span>BPM</span>
-            <span>{{ record.bpm }}</span>
+            <span>Heart Rate</span>
+            <span>{{ record.bpm }} bpm</span>
           </li>
         </ul>
+
         <app-chart [record]="record"></app-chart>
+
+        <div class="buttons">
+          <ion-button (click)="downloadCSVPulseWave()"
+                      color="primary"
+                      expand="block">
+            Download CSV with pulse wave
+            <ion-icon name="download-outline" slot="end"></ion-icon>
+          </ion-button>
+          <ion-button (click)="downloadCSVPeaks()"
+          color="primary"
+          expand="block">
+            Download CSV with peak points
+            <ion-icon name="download-outline" slot="end"></ion-icon>
+          </ion-button>
+          <ion-button (click)="downloadCSVDistances()"
+          color="primary"
+          expand="block">
+            Download CSV with distances
+            <ion-icon name="download-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
       </main>
     </ng-container>
   </ng-container>

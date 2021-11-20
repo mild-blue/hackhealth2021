@@ -72,4 +72,16 @@ export class MeasurementDetailPage implements OnInit {
       this.navController.navigateBack('/patient/history');
     }
   }
+
+  downloadCSVPeaks() {
+
+  }
+
+  downloadCSVDistances() {
+
+  }
+
+  downloadCSVPulseWave() {
+
+  }
 }
