@@ -23,7 +23,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.doctorService.logout();
       }
 
-      throw new Error(message);
+      throw new Error(message.title ?? message);
     }));
   }
 }

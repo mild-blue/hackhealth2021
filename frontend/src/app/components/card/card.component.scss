@@ -1,0 +1,16 @@
+header {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+section {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  background: var(--border-color);
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-weight: 700;
+  text-align: center;
+}

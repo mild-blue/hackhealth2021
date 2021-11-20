@@ -81,7 +81,7 @@ export class HeartCapturePage implements OnInit {
 
   async captureVideo(): Promise<VideoCapture> {
     try {
-      const result: MediaFile[] | CaptureError = await this.mediaCapture.captureVideo({ duration: 5 });
+      const result: MediaFile[] | CaptureError = await this.mediaCapture.captureVideo({ duration: 60 });
       if ('code' in result) {
         return;
       }

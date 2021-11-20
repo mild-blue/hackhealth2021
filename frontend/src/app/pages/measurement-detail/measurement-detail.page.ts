@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../services/toast/toast.service';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
 import { RecordDetail } from '../../model/RecordDetail';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -12,21 +13,30 @@ import { RecordDetail } from '../../model/RecordDetail';
 })
 export class MeasurementDetailPage implements OnInit {
 
+  isDoctor = this.doctorService.isDoctorLoggedIn;
+
   record?: RecordDetail;
-  loading = false
+  loading = false;
 
   id?: string;
-  backText = this.doctorService.isDoctorLoggedIn ? 'Back' : 'My history';
+  backText = this.isDoctor ? 'Back' : 'My history';
+  patientName?: string;
+  doctorName?: string;
 
   constructor(private activatedRoute: ActivatedRoute,
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
-              private router: Router) {
+              private navController: NavController) {
   }
 
   ngOnInit() {
     this.id = this.activatedRoute.snapshot.paramMap.get('recordId') ?? undefined;
+    this.patientName = this.activatedRoute.snapshot.paramMap.get('name') ?? undefined;
+
+    if (!this.isDoctor) {
+      this.doctorName = this.patientService.patientValue?.doctor?.name ?? '';
+    }
 
     if (!this.id) {
       return;
@@ -51,10 +61,15 @@ export class MeasurementDetailPage implements OnInit {
   }
 
   public goBack(): void {
-    if (this.doctorService.isDoctorLoggedIn) {
-      this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+    if (this.isDoctor) {
+      const patientId = this.activatedRoute.snapshot.paramMap.get('id');
+      if (patientId && this.patientName) {
+        this.navController.navigateBack(`/patient-detail/${patientId}/${this.patientName}`);
+      } else {
+        this.navController.navigateBack(`/patient-detail`);
+      }
     } else {
-      this.router.navigate(['/patient/history'], { replaceUrl: true });
+      this.navController.navigateBack('/patient/history');
     }
   }
 }

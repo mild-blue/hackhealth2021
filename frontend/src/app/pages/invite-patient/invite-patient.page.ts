@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Patient } from '../../model/Patient';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { Router } from '@angular/router';
+import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
   selector: 'app-invite-patient',
@@ -12,9 +13,11 @@ export class InvitePatientPage implements OnInit {
 
   patients: Patient[] = [];
   selectedPatient?: Patient;
+  loading = false;
 
   constructor(private doctorService: DoctorService,
-              private router: Router) {
+              private router: Router,
+              private toastService: ToastService) {
   }
 
   ngOnInit() {
@@ -22,10 +25,13 @@ export class InvitePatientPage implements OnInit {
   }
 
   async initAllPatients() {
+    this.loading = true;
     try {
       this.patients = await this.doctorService.getAllPatients();
     } catch (e) {
-
+      this.toastService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 

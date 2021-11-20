@@ -49,7 +49,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/invite-patient-success/invite-patient-success.module').then(m => m.InvitePatientSuccessPageModule)
   },
   {
-    path: 'patient-detail/:id',
+    path: 'patient-detail/:id/:name',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/patient-detail/patient-detail.module').then(m => m.PatientDetailPageModule)
   }

@@ -49,7 +49,12 @@ export class PatientService {
   public async getPatientRecord(id: string): Promise<RecordDetail> {
     return this.http.get<RecordDetail>(
       `${environment.apiUrl}/Patient/data/${id}`
-    ).pipe().toPromise();
+    ).pipe(
+      map(data => {
+        data.date = new Date(data.created);
+        return data;
+      })
+    ).toPromise();
   }
 
   public async acceptInvitation(invitationCode: string): Promise<Patient> {
