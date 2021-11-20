@@ -13,13 +13,10 @@
   <main>
     <ng-container *ngIf="!loading else spinner">
       <ng-container *ngIf="patients.length else noPatients">
-        <ion-list>
-          <ion-item *ngFor="let p of patients"
-                    [routerLink]="['/patient-detail', p.id, p.name]"
-                    [detail]="true">
-            <ion-label>{{ p.name }}</ion-label>
-          </ion-item>
-        </ion-list>
+        <app-patient-item *ngFor="let p of patients"
+                          [patient]="p"
+                          [routerLink]="['/patient-detail', p.id, p.name]">
+        </app-patient-item>
       </ng-container>
     </ng-container>
   </main>
