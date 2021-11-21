@@ -13,8 +13,5 @@
 			"androidScaleType": "CENTER_CROP",
 			"splashFullScreen": true
 		}
-	},
-	"server": {
-		"url": "http://192.168.0.66:8100"
 	}
 }
