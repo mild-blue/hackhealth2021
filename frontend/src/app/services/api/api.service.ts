@@ -16,6 +16,12 @@ export class ApiService {
     this.patientService.patient$.subscribe(patient => this.patientId = patient?.id);
   }
 
+  public async download(id: string): Promise<unknown> {
+    return this.http.get<unknown>(
+      `${environment.apiUrl}/Patient/data/${id}/csv/pulse_wave`
+    ).pipe().toPromise();
+  }
+
   public async uploadVideo(blob: Blob): Promise<string> {
     if (!this.patientId) {
       throw Error('No patient ID specified for upload');

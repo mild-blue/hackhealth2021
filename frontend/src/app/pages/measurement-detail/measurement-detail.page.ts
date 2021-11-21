@@ -7,7 +7,9 @@ import { RecordDetail } from '../../model/RecordDetail';
 import { NavController } from '@ionic/angular';
 import { File as FilePlugin } from '@ionic-native/file/ngx';
 import { HttpClient } from '@angular/common/http';
-import { Filesystem } from '@capacitor/filesystem';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { environment } from '../../../environments/environment';
+import { ApiService } from '../../services/api/api.service';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -31,6 +33,7 @@ export class MeasurementDetailPage implements OnInit {
               private doctorService: DoctorService,
               private patientService: PatientService,
               private navController: NavController,
+              private api: ApiService,
               private file: FilePlugin,
               private http: HttpClient) {
   }
@@ -87,32 +90,34 @@ export class MeasurementDetailPage implements OnInit {
   }
 
   async downloadCSVPulseWave() {
-    // try {
-    //   const binary = await this.http.get(
-    //     `${environment.apiUrl}/Patient/data/${this.id}/csv/pulse_wave`
-    //   ).pipe().toPromise();
-    // } catch (e) {
-    //   console.log(e);
-    // }
-    //
-    //
-    // // await binary.text().then(text => console.log(text)).catch(e => console.log(e));
-    let permissions;
     try {
-      permissions = await Filesystem.requestPermissions();
+      const blob = await fetch(`${environment.apiUrl}/Patient/data/${this.id}/csv/pulse_wave`);
+      const text = await blob.text();
+      // const blob = this.api.download(this.id);
+      console.log(text);
+
+      await Filesystem.writeFile({
+        path: 'secrets/text2.txt',
+        data: text,
+        directory: Directory.Documents,
+        recursive: true,
+        encoding: Encoding.UTF8
+      });
     } catch (e) {
       console.log(e);
     }
 
-    console.log(permissions);
-    if (permissions.publicStorage !== 'denied') {
-      try {
-        const contents = await Filesystem.writeFile({ path: this.file.dataDirectory + 'myDir', data: 'hellow rold' });
-        console.log(contents);
-      } catch (e) {
-        console.log(e);
-      }
 
+    try {
+      await Filesystem.writeFile({
+        path: 'secrets/text.txt',
+        data: 'This is a test',
+        directory: Directory.Documents,
+        recursive: true,
+        encoding: Encoding.UTF8
+      });
+    } catch (e) {
+      console.log(e);
     }
   }
 }
