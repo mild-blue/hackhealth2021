@@ -20,3 +20,58 @@
     margin-top: 40px;
   }
 }
+
+section {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0;
+
+    li {
+      padding: 10px 15px;
+      border: 1px solid var(--grey);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: -1px;
+
+      ion-icon {
+        font-size: 18px;
+        position: relative;
+        top: 2px;
+      }
+
+      &.active {
+        font-weight: 700;
+        color: var(--ion-color-primary);
+      }
+
+      &:first-child {
+        border-radius: 6px 6px 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 6px 6px;
+      }
+    }
+  }
+
+  ol {
+    margin-bottom: 40px;
+
+    li {
+      padding: 10px 0;
+
+      ion-icon {
+        position: relative;
+        top: 2px;
+        color: var(--ion-color-primary);
+      }
+
+      span {
+        display: block;
+        margin-top: 10px;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}

@@ -35,7 +35,7 @@ export class VerifyPage implements OnInit {
 
     try {
       await this.patientService.acceptInvitation(this.code);
-      this.toastService.success('Code successfully verified');
+      this.toastService.success('Code successfully verified', 'top');
       this.navController.navigateRoot(['/patient']);
     } catch (e) {
       this.toastService.error(e.message);

@@ -15,11 +15,11 @@
         <h1>Select preferred length of the captured video</h1>
 
         <ul>
-          <li (click)="length = 30">
+          <li (click)="length = 30" [class.active]="length === 30">
             30 seconds
             <ion-icon *ngIf="length === 30" name="checkmark"></ion-icon>
           </li>
-          <li (click)="length = 60">
+          <li (click)="length = 60" [class.active]="length === 60">
             60 seconds
             <ion-icon *ngIf="length === 60" name="checkmark"></ion-icon>
           </li>
@@ -28,19 +28,20 @@
         <ion-button (click)="step = 2"
                     color="primary"
                     expand="block">
-          Confirm {{ length }}s video
+          Confirm {{ length }} second duration
           <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </ion-button>
       </section>
 
       <section *ngIf="step === 2">
+        <h1>Follow these steps:</h1>
         <ol>
           <li>Turn on the flash before recording</li>
           <li>Place your index finger on the camera lens</li>
           <li>Start recording</li>
           <li>
             After <strong>{{length}}</strong> seconds recording will stop automatically
-            <i>Shorter videos will not be processed</i>
+            <span>Shorter videos will not be processed!</span>
           </li>
           <li>
             Confirm your recording and wait for results
