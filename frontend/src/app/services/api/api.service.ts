@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
 import { PatientService } from '../patient/patient.service';
+import { RecordDetail } from '../../model/RecordDetail';
 
 @Injectable({
   providedIn: 'root'
@@ -30,15 +31,11 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', blob);
 
-    return this.http.post(
+    return this.http.post<RecordDetail>(
       `${environment.apiUrl}/Patient/${this.patientId}/submit`,
       formData
     ).pipe(
-      map((response: unknown) => {
-        console.log('response', response);
-
-        return '123';
-      })
+      map(data => data.id)
     ).toPromise();
   }
 
