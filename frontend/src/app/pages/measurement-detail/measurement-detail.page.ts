@@ -5,11 +5,9 @@ import { DoctorService } from '../../services/doctor/doctor.service';
 import { PatientService } from '../../services/patient/patient.service';
 import { RecordDetail } from '../../model/RecordDetail';
 import { NavController } from '@ionic/angular';
-import { File as FilePlugin } from '@ionic-native/file/ngx';
-import { HttpClient } from '@angular/common/http';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { environment } from '../../../environments/environment';
-import { ApiService } from '../../services/api/api.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-measurement-detail',
@@ -32,10 +30,7 @@ export class MeasurementDetailPage implements OnInit {
               private toastService: ToastService,
               private doctorService: DoctorService,
               private patientService: PatientService,
-              private navController: NavController,
-              private api: ApiService,
-              private file: FilePlugin,
-              private http: HttpClient) {
+              private navController: NavController) {
   }
 
   ngOnInit() {
@@ -81,43 +76,55 @@ export class MeasurementDetailPage implements OnInit {
     }
   }
 
-  downloadCSVPeaks() {
+  async downloadCSVPeaks() {
+    try {
+      const blob = await fetch(`${environment.apiUrl}/Patient/data/${this.id}/csv/peaks`);
+      const text = await blob.text();
 
+      const location = await this.saveFile(text, 'Peak points');
+      this.toastService.success(`Successfully saved file as ${location}`);
+    } catch (e) {
+      this.toastService.error(e.message);
+    }
   }
 
-  downloadCSVDistances() {
+  async downloadCSVDistances() {
+    try {
+      const blob = await fetch(`${environment.apiUrl}/Patient/data/${this.id}/csv/distances`);
+      const text = await blob.text();
 
+      const location = await this.saveFile(text, 'RR tachogram');
+      this.toastService.success(`Successfully saved file as ${location}`);
+    } catch (e) {
+      this.toastService.error(e.message);
+    }
   }
 
   async downloadCSVPulseWave() {
     try {
       const blob = await fetch(`${environment.apiUrl}/Patient/data/${this.id}/csv/pulse_wave`);
       const text = await blob.text();
-      // const blob = this.api.download(this.id);
-      console.log(text);
 
-      await Filesystem.writeFile({
-        path: 'secrets/text2.txt',
-        data: text,
-        directory: Directory.Documents,
-        recursive: true,
-        encoding: Encoding.UTF8
-      });
+      const location = await this.saveFile(text, 'Pulse Wave');
+      this.toastService.success(`Successfully saved file as ${location}`);
     } catch (e) {
-      console.log(e);
+      this.toastService.error(e.message);
     }
+  }
 
+  async saveFile(data: string, type: string): Promise<string> {
+    const date = moment(this.record.date).format('DD.MM.YYYY');
+    const subDir = this.patientName ? `${this.patientName}/${this.record.created}` : (this.patientService.patientValue.name ? `${this.patientName}/${date}` : `${date}`);
 
-    try {
-      await Filesystem.writeFile({
-        path: 'secrets/text.txt',
-        data: 'This is a test',
-        directory: Directory.Documents,
-        recursive: true,
-        encoding: Encoding.UTF8
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    const path = `Export/${subDir}/${type}.csv`;
+    await Filesystem.writeFile({
+      path,
+      data,
+      directory: Directory.Documents,
+      recursive: true,
+      encoding: Encoding.UTF8
+    });
+
+    return path;
   }
 }
