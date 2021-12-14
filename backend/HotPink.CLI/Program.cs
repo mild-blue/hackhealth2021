@@ -26,7 +26,8 @@ services.AddSingleton(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     var key = configuration["FhirApiKey"];
-    var client = new FhirClient("https://fhir.afuwmxvolwu6.static-test-account.isccloud.io", messageHandler: new ApiKeyMessageHandler(key));
+    var url = configuration["FhirUrl"];
+    var client = new FhirClient(url, messageHandler: new ApiKeyMessageHandler(key));
     client.Settings.PreferredFormat = ResourceFormat.Json;
     return client;
 });
