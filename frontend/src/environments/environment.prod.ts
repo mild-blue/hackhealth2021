@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://hotpink.azurewebsites.net'
+  apiUrl: 'https://heart.stg.mild.blue/api'
 };
