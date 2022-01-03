@@ -6,7 +6,6 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 RUN npm install -g @ionic/cli
-RUN npm install -g @angular/cli
 
 COPY . .
 RUN npm run build-production
