@@ -1,0 +1,47 @@
+# Do not forget to update other docker-compose files, especially in project-configuration repository.
+version: '3.8'
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: HotPink.API/Dockerfile
+    container_name: be
+    env_file:
+      - .env
+    restart: always
+    expose:
+      - 80
+    ports:
+      - "8080:80"
+    depends_on:
+      - video-processing
+    logging:
+      options:
+        max-size: "20m"
+
+  video-processing:
+    build:
+      context: video_processing
+      dockerfile: Dockerfile
+    container_name: video-processing
+    env_file:
+      - .env
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: fe
+    env_file:
+      - .env
+    restart: always
+    expose:
+      - 80
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
