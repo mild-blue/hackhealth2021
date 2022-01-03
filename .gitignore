@@ -4,3 +4,4 @@
 
 /backend/HotPink.API/Properties/ServiceDependencies/hotpink - Zip Deploy/profile.arm.json
 *.MOV
+/.env
