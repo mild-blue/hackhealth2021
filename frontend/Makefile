@@ -24,4 +24,6 @@ run-ios-live:
 	ionic cap sync ios
 	ionic cap run ios -l --external
 
+build-docker:
+	docker build -t 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-heart-frontend .
 #ionic cap sync ios && ionic cap run ios -l --external
