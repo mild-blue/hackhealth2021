@@ -9,7 +9,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build-production": "ionic build --prod --base-href ./ && ionic capacitor copy --prod --no-build"
   },
   "private": true,
   "dependencies": {
