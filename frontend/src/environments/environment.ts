@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://hotpink.azurewebsites.net'
+  apiUrl: 'http://localhost:8080/api'
 };
 
 /*

@@ -37,12 +37,6 @@ builder.Services.AddSingleton(provider =>
     return client;
 });
 
-// CORS
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder => builder.WithOrigins("*"));
-});
-
 // JSON
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
@@ -52,13 +46,12 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 var app = builder.Build();
 
+// CORS
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
 // Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
