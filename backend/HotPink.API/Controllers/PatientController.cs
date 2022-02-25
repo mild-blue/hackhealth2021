@@ -94,10 +94,10 @@ public class PatientController : ApiController
         _log.LogInformation("Uploaded to: {filePath}.", filePath);
 
         // classify data
-        var myurl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        _log.LogInformation("URL: {url}", myurl);
+        var myUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/api";
+        _log.LogInformation("URL: {url}", myUrl);
 
-        string path = $"{myurl}/patient/download/{fileName}";
+        string path = $"{myUrl}/patient/download/{fileName}";
         try
         {
             var data = await _classificationService.Classify(path);
