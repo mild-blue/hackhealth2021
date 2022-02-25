@@ -2,12 +2,11 @@
 version: '3.8'
 services:
   backend:
+    image: 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-heart-backend
     build:
       context: backend
       dockerfile: HotPink.API/Dockerfile
     container_name: be
-    env_file:
-      - .env
     restart: always
     expose:
       - 80
@@ -20,24 +19,22 @@ services:
         max-size: "20m"
 
   video-processing:
+    image: 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-heart-video-processing
     build:
       context: video_processing
       dockerfile: Dockerfile
     container_name: video-processing
-    env_file:
-      - .env
     restart: always
     logging:
       options:
         max-size: "10m"
 
   frontend:
+    image: 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-heart-frontend
     build:
       context: frontend
       dockerfile: Dockerfile
     container_name: fe
-    env_file:
-      - .env
     restart: always
     expose:
       - 80
