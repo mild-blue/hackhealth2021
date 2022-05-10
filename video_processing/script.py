@@ -136,7 +136,7 @@ def get_heart_rate(file_url):
         )
     elif bpm < 60:
         return make_response(jsonify({
-            'error': 'Bradycardia',
+            'conclusion': 'Bradycardia',
             'message': 'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm).' +
                        'If you\'re not an athlete and your bpm is lower than 60 bpm, it may mean ' +
                        'that you have bradycardia, which could be an indicator of other health conditions. ' +
