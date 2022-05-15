@@ -19,7 +19,7 @@ def rr_tachogram_plot(peaks_distances):
     plt.figure(2)
     plt.plot(peaks_distances, 'bo')
     ax = plt.gca()
-    ax.set_ylim([0, 1])
+    ax.set_ylim([0, 2])
     plt.show()
 
 
@@ -27,8 +27,8 @@ def poincare_plot(peaks_distances):
     plt.figure(3)
     plt.scatter(peaks_distances[:-1], peaks_distances[1:])
     ax = plt.gca()
-    ax.set_ylim([0, 1.2])
-    ax.set_xlim([0, 1.2])
+    ax.set_ylim([0, 2])
+    ax.set_xlim([0, 2])
     plt.show()
 
 
@@ -60,7 +60,7 @@ def get_heart_rate(file_url):
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_duration = frame_count / fps
 
-    print('video_duration: {}'.format(video_duration))
+    print(f'video_duration: {video_duration}')
 
     # This should never happen, we limit the length during recording, after 30 (or 60 sec) the video will turn off
     if (not is_near(video_duration, 30, 0.5)) and (not is_near(video_duration, 60, 0.5)):
@@ -70,14 +70,14 @@ def get_heart_rate(file_url):
         }), 400
         )
 
-    print('frames per sec: {}'.format(fps))
+    print(f'frames per sec: {fps}')
 
     if is_near(video_duration, 60, 0.5):
         proper_video_length_in_frames = int(60 * fps)
     else:
         proper_video_length_in_frames = int(30 * fps)
 
-    print('proper_video_length_in_frames {}'.format(proper_video_length_in_frames))
+    print(f'proper_video_length_in_frames {proper_video_length_in_frames}')
 
     assert cap.isOpened()
 
@@ -90,7 +90,7 @@ def get_heart_rate(file_url):
         h, s, v = cv2.split(im)
         full_video.append(int(np.sum(v)))
 
-    print('full video len: {}'.format(len(full_video)))
+    print(f'full video len: {len(full_video)}')
 
     max_y = np.max(full_video)
     min_y = np.min(full_video)
@@ -119,8 +119,9 @@ def get_heart_rate(file_url):
 
     # BPM
     bpm = len(peaks)
+    print(f'peaks counted: {bpm}')
     bpm *= round(60 / video_duration)
-    print('bpm: {}'.format(bpm))
+    print(f'bpm: {bpm}')
 
     # RR intervals
     rr_tachogram_plot(peaks_distances)
@@ -137,10 +138,13 @@ def get_heart_rate(file_url):
     elif bpm < 60:
         return make_response(jsonify({
             'conclusion': 'Bradycardia',
-            'message': 'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm).' +
-                       'If you\'re not an athlete and your bpm is lower than 60 bpm, it may mean ' +
-                       'that you have bradycardia, which could be an indicator of other health conditions. ' +
-                       'If you suspect that the low bpm was due to poor video quality, please repeat the measurement.',
+            'message': f'Warning! Your heart rate is {bpm}. ' +
+                       'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm). ' +
+                       f'A heart rate of {bpm} is thus considered as bradycardia. ' +
+                       'If you\'re not an athlete and your bpm is lower than 60 bpm, it might be ' +
+                       'a sign of bradycardia, which could be an indicator of other health conditions. ' +
+                       'Please, double check your heart rate (repeat the measurement, use different ways of ' +
+                       'measuring heart rate). If you do not feel well, contact a doctor.',
             'pulse_wave': ppg,
             'peaks': peaks_arr,
             'peaks_distances': peaks_distances,
@@ -150,11 +154,11 @@ def get_heart_rate(file_url):
     elif bpm > 100:
         return make_response(jsonify({
             'conclusion': 'Tachycardia',
-            'message': 'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm).' +
-                       'A fast heart rate isn\'t always a concern, the heart rate typically rises during exercise' +
-                       'or as a response to stress. Many types of irregular heart rhythms (arrhythmias) can cause ' +
-                       'tachycardia. If you have irregular or height heart rate for a long time, you should contact your doctor. ' +
-                       'If you suspect that the high bpm was due to poor video quality, please repeat the measurement.',
+            'message': f'Warning! Your heart rate is {bpm}. ' +
+                       'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm). ' +
+                       f'A heart rate of {bpm} is thus considered as tachycardia. ' +
+                       'If your heart rate remains high even after you have calmed down (repeat the measurement in a few minutes). ' +
+                       'If you have irregular or height heart rate for a long time or you do not feel well, contact a doctor.',
             'pulse_wave': ppg,
             'peaks': peaks_arr,
             'peaks_distances': peaks_distances,
@@ -164,8 +168,7 @@ def get_heart_rate(file_url):
 
     return make_response(jsonify({
         'conclusion': 'Normal rhythm',
-        'message': 'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm).' +
-                   'Your resting heart rate is in normal range.',
+        'message': 'Your heart rate is in normal resting range.',
         'pulse_wave': ppg,
         'peaks': peaks_arr,
         'peaks_distances': peaks_distances,
