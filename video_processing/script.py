@@ -10,8 +10,27 @@ from matplotlib import pyplot as plt
 
 app = Flask(__name__)
 
+
 def is_near(value, threshold, delta):
     return abs(value - threshold) < delta
+
+
+def rr_tachogram_plot(peaks_distances):
+    plt.figure(2)
+    plt.plot(peaks_distances, 'bo')
+    ax = plt.gca()
+    ax.set_ylim([0, 2])
+    plt.show()
+
+
+def poincare_plot(peaks_distances):
+    plt.figure(3)
+    plt.scatter(peaks_distances[:-1], peaks_distances[1:])
+    ax = plt.gca()
+    ax.set_ylim([0, 2])
+    ax.set_xlim([0, 2])
+    plt.show()
+
 
 @app.get("/<path:file_url>")
 def get_heart_rate(file_url):
@@ -23,7 +42,7 @@ def get_heart_rate(file_url):
     file_url = urllib.parse.unquote(file_url)
     print(file_url)
     to_verify = "localhost" not in file_url
-    file_url = file_url.replace("localhost","host.docker.internal")
+    file_url = file_url.replace("localhost", "host.docker.internal")
     print(file_url)
 
     u = requests.get(file_url, verify=to_verify)
@@ -41,9 +60,9 @@ def get_heart_rate(file_url):
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_duration = frame_count / fps
 
-    print("video_duration: ")
-    print(video_duration)
+    print(f'video_duration: {video_duration}')
 
+    # This should never happen, we limit the length during recording, after 30 (or 60 sec) the video will turn off
     if (not is_near(video_duration, 30, 0.5)) and (not is_near(video_duration, 60, 0.5)):
         return make_response(jsonify({
             'error': 'Invalid input',
@@ -51,13 +70,14 @@ def get_heart_rate(file_url):
         }), 400
         )
 
-    print("fps: ")
-    print(fps)
+    print(f'frames per sec: {fps}')
 
-    proper_video_length_in_frames = int(60 * fps)
+    if is_near(video_duration, 60, 0.5):
+        proper_video_length_in_frames = int(60 * fps)
+    else:
+        proper_video_length_in_frames = int(30 * fps)
 
-    print("proper_video_length_in_frames")
-    print(proper_video_length_in_frames)
+    print(f'proper_video_length_in_frames {proper_video_length_in_frames}')
 
     assert cap.isOpened()
 
@@ -70,64 +90,89 @@ def get_heart_rate(file_url):
         h, s, v = cv2.split(im)
         full_video.append(int(np.sum(v)))
 
-    print("full_video")
-    print(len(full_video))
+    print(f'full video len: {len(full_video)}')
 
-    values = full_video
+    max_y = np.max(full_video)
+    min_y = np.min(full_video)
 
-    maxi = np.max(values)
-    mini = np.min(values)
-
-    dist = maxi - mini
+    dist = max_y - min_y
 
     # TODO: tady bude mozna treba to rozseparovat do mensich casti a min/max urcit zvlast
-    peaks, properties = scipy.signal.find_peaks(values, prominence=dist / 6)
-    x_axis_in_sec = [i / fps for i in range(len(values))]
+    peaks, properties = scipy.signal.find_peaks(full_video, prominence=dist / 6)
+    x_axis_in_sec = [i / fps for i in range(len(full_video))]
     peaks_in_sec = [i / fps for i in peaks]
     peaks_distances = []
     for previous, current in zip(peaks_in_sec, peaks_in_sec[1:]):
         peaks_distances.append(current - previous)
 
-    # values
-    pulse_wave = [x_axis_in_sec, values]
-    plt.plot(x_axis_in_sec, values)
+    ppg = [x_axis_in_sec, full_video]
+    plt.plot(x_axis_in_sec, full_video)
 
     # peaks
-    peaks_arr = [peaks_in_sec, [int(values[i]) for i in peaks]]
-    plt.plot(peaks_in_sec, [int(values[i]) for i in peaks], 'ro')
-    plt.axhline(max(values))
-    plt.axhline(min(values))
+    peaks_arr = [peaks_in_sec, [int(full_video[i]) for i in peaks]]
+    plt.plot(peaks_in_sec, [int(full_video[i]) for i in peaks], 'ro')
+    plt.axhline(max(full_video))
+    plt.axhline(min(full_video))
 
     plt.xlabel('time(s)')
     plt.show()
 
     # BPM
     bpm = len(peaks)
-    bpm *= round(60/video_duration)
-    print("bpm")
-    print(bpm)
-
-    if bpm <= 50:
-        return make_response(jsonify({
-            'error': 'Invalid input',
-            'message': 'Poor video quality.'
-        }), 400
-        )
+    print(f'peaks counted: {bpm}')
+    bpm *= round(60 / video_duration)
+    print(f'bpm: {bpm}')
 
     # RR intervals
-    plt.figure(2)
-    plt.plot(peaks_distances, 'bo')
-    ax = plt.gca()
-    ax.set_ylim([0, 1])
-    plt.show()
+    rr_tachogram_plot(peaks_distances)
+    poincare_plot(peaks_distances)
 
     os.remove(path)
 
+    if bpm <= 40:
+        return make_response(jsonify({
+            'error': 'Invalid input',
+            'message': 'Poor video quality, please repeat the measurement.'
+        }), 400
+        )
+    elif bpm < 60:
+        return make_response(jsonify({
+            'conclusion': 'Bradycardia',
+            'message': f'Warning! Your heart rate is {bpm}. ' +
+                       'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm). ' +
+                       f'A heart rate of {bpm} is thus considered as bradycardia. ' +
+                       'If you\'re not an athlete and your bpm is lower than 60 bpm, it might be ' +
+                       'a sign of bradycardia, which could be an indicator of other health conditions. ' +
+                       'Please, double check your heart rate (repeat the measurement, use different ways of ' +
+                       'measuring heart rate). If you do not feel well, contact a doctor.',
+            'pulse_wave': ppg,
+            'peaks': peaks_arr,
+            'peaks_distances': peaks_distances,
+            'bpm': bpm
+        }), 200
+        )
+    elif bpm > 100:
+        return make_response(jsonify({
+            'conclusion': 'Tachycardia',
+            'message': f'Warning! Your heart rate is {bpm}. ' +
+                       'A normal resting heart rate for adults ranges from 60 to 100 beats per minute (bpm). ' +
+                       f'A heart rate of {bpm} is thus considered as tachycardia. ' +
+                       'If your heart rate remains high even after you have calmed down (repeat the measurement in a few minutes). ' +
+                       'If you have irregular or height heart rate for a long time or you do not feel well, contact a doctor.',
+            'pulse_wave': ppg,
+            'peaks': peaks_arr,
+            'peaks_distances': peaks_distances,
+            'bpm': bpm
+        }), 200
+        )
+
     return make_response(jsonify({
-        "pulse_wave": pulse_wave,
-        "peaks": peaks_arr,
-        "peaks_distances": peaks_distances,
-        "bpm": bpm
+        'conclusion': 'Normal rhythm',
+        'message': 'Your heart rate is in normal resting range.',
+        'pulse_wave': ppg,
+        'peaks': peaks_arr,
+        'peaks_distances': peaks_distances,
+        'bpm': bpm
     }), 200)
 
 
