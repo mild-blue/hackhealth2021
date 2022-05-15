@@ -15,6 +15,10 @@ def is_near(value, threshold, delta):
     return abs(value - threshold) < delta
 
 
+def chunker(seq, size, window):
+    return [seq[pos:pos + size] for pos in range(0, len(seq), window)]
+
+
 def rr_tachogram_plot(peaks_distances):
     plt.figure(2)
     plt.plot(peaks_distances, 'bo')
@@ -92,15 +96,23 @@ def get_heart_rate(file_url):
 
     print(f'full video len: {len(full_video)}')
 
-    max_y = np.max(full_video)
-    min_y = np.min(full_video)
+    peaks_full_video = []
+    cycle = 0
+    for group in chunker(full_video, 50, 35):
+        max_y = np.max(group)
+        min_y = np.min(group)
 
-    dist = max_y - min_y
+        dist = max_y - min_y
 
-    # TODO: tady bude mozna treba to rozseparovat do mensich casti a min/max urcit zvlast
-    peaks, properties = scipy.signal.find_peaks(full_video, prominence=dist / 6)
+        peaks, properties = scipy.signal.find_peaks(group, prominence=dist / 3)
+        peaks_full_video = np.append(peaks_full_video, (cycle * 35) + peaks).astype(int)
+        cycle += 1
+
+    peaks_full_video = np.unique(peaks_full_video)
+    print(f'num of peaks detected {len(peaks_full_video)}')
+
     x_axis_in_sec = [i / fps for i in range(len(full_video))]
-    peaks_in_sec = [i / fps for i in peaks]
+    peaks_in_sec = [i / fps for i in peaks_full_video]
     peaks_distances = []
     for previous, current in zip(peaks_in_sec, peaks_in_sec[1:]):
         peaks_distances.append(current - previous)
@@ -109,8 +121,8 @@ def get_heart_rate(file_url):
     plt.plot(x_axis_in_sec, full_video)
 
     # peaks
-    peaks_arr = [peaks_in_sec, [int(full_video[i]) for i in peaks]]
-    plt.plot(peaks_in_sec, [int(full_video[i]) for i in peaks], 'ro')
+    peaks_arr = [peaks_in_sec, [int(full_video[i]) for i in peaks_full_video]]
+    plt.plot(peaks_in_sec, [int(full_video[i]) for i in peaks_full_video], 'ro')
     plt.axhline(max(full_video))
     plt.axhline(min(full_video))
 
@@ -118,8 +130,7 @@ def get_heart_rate(file_url):
     plt.show()
 
     # BPM
-    bpm = len(peaks)
-    print(f'peaks counted: {bpm}')
+    bpm = len(peaks_full_video)
     bpm *= round(60 / video_duration)
     print(f'bpm: {bpm}')
 
