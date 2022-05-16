@@ -22,6 +22,11 @@ ul {
   }
 }
 
+p {
+  line-height: 1.8;
+  margin: 0 0 30px;
+}
+
 .alert {
   color: var(--ion-color-success);
   background-color: rgba(var(--ion-color-success-rgb), 0.2);
