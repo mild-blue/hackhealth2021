@@ -6,11 +6,13 @@ using HotPink.API.Extensions;
 
 using System.Collections.Concurrent;
 using System.Drawing;
+using System.Globalization;
 using System.Net;
-
+using Hl7.Fhir.ElementModel.Types;
 using static HotPink.API.Controllers.DoctorController;
 using static HotPink.API.Controllers.PatientController;
-
+using DateTime = System.DateTime;
+using Quantity = Hl7.Fhir.Model.Quantity;
 using Task = System.Threading.Tasks.Task;
 
 namespace HotPink.API.Services
@@ -22,7 +24,8 @@ namespace HotPink.API.Services
         private const string WAVE = "wave-hotpink";
         private const string PEAKS = "peaks-hotpink";
         private const string DISTANCES = "distances-hotpink";
-
+        private const string MESSAGE = "message-hotpink";
+        private const string CONCLUSION = "conclusion-hotpink";
 
         private readonly ConcurrentDictionary<Guid, string> _sessions = new();
         private readonly FhirClient _fhir;
@@ -126,6 +129,21 @@ namespace HotPink.API.Services
                     Period = 0
                 }
             });
+            
+            // Message
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, MESSAGE),
+                Value = new FhirString(data.Message)
+            });
+            
+            // Conclusion
+            observation.Component.Add(new Observation.ComponentComponent()
+            {
+                Code = new CodeableConcept(SYSTEM, CONCLUSION),
+                Value = new FhirString(data.Conclusion)
+            });
+            
 
             await _fhir.CreateAsync(observation);
             var observations = await GetPatientObservations(patientId);
@@ -242,13 +260,15 @@ namespace HotPink.API.Services
                 Peaks = Deserialize2D(observation.Component, PEAKS),
                 PeaksDistances = Deserialize1D(observation.Component, DISTANCES),
                 PulseWave = Deserialize2D(observation.Component, WAVE),
+                Message = GetString(observation.Component, MESSAGE),
+                Conclusion = GetString(observation.Component, CONCLUSION),
             };
 
         private static string Serialize1D(decimal[] data) =>
             string.Join(" ", data);
 
         private static decimal[] DeSerialize1D(string data) =>
-            data.Split(" ").Select(x => decimal.Parse(x)).ToArray();
+            data.Split(" ").Select(x => decimal.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 
         private static List<decimal[]> Deserialize2D(IEnumerable<Observation.ComponentComponent> components, string code)
         {
@@ -280,6 +300,17 @@ namespace HotPink.API.Services
             }
 
             return Array.Empty<decimal>();
+        }
+
+        private static string GetString(IEnumerable<Observation.ComponentComponent> components, string code)
+        {
+            var component = components.FirstOrDefault(x => x.Code.Coding.Any(y => y.Code == code));
+            if (component?.Value is FhirString s)
+            {
+                return s.Value ?? "";
+            }
+
+            return "";
         }
     }
 }
