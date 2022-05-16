@@ -19,5 +19,11 @@ namespace HotPink.API.Entities
 
         [JsonPropertyName("pulse_wave")]
         public List<decimal[]> PulseWave { get; set; } = new();
+
+        [JsonPropertyName("conclusion")]
+        public string Conclusion { get; set; } = "";
+        
+        [JsonPropertyName("message")]
+        public string Message { get; set; } = "";
     }
 }
