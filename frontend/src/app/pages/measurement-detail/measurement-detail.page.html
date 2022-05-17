@@ -30,7 +30,15 @@
             <span>Heart Rate</span>
             <span>{{ record.bpm }} bpm</span>
           </li>
+          <li *ngIf="record.conclusion">
+            <span>Conslusion</span>
+            <span>{{ record.conclusion }}</span>
+          </li>
         </ul>
+
+        <p *ngIf="record.message">
+          {{ record.message }}
+        </p>
 
         <app-chart [record]="record"></app-chart>
 
